@@ -1,12 +1,13 @@
 import {
   Entity,
-  OneToMany,
+  Enum,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Todo } from './todo.entity';
+import { Role } from './role.enum';
+
 
 @ObjectType()
 @Entity({ tableName: 'users' })
@@ -27,6 +28,10 @@ export class User {
   @Property()
   name!: string;
 
+  @Field(() => Role)
+  @Enum({ items: () => Role, default: Role.USER })
+  role: Role = Role.USER;
+
   @Field()
   @Property({ onCreate: () => new Date() })
   createdAt!: Date;
@@ -35,6 +40,4 @@ export class User {
   @Property({ onUpdate: () => new Date(), nullable: true })
   updatedAt?: Date;
 
-  @OneToMany(() => Todo, (todo) => todo.user)
-  todos = new Array<Todo>();
 }

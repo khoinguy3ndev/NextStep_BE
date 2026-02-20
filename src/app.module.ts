@@ -8,7 +8,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import mikroOrmConfig from './config/mikro-orm.config';
-import { TodoModule } from './modules/todo/todo.module';
+
 import { UserModule } from './modules/user/user.module';
 @Module({
   imports: [
@@ -20,7 +20,6 @@ import { UserModule } from './modules/user/user.module';
       playground: true,
     }),
 
-    TodoModule,
     AuthModule,
     UserModule,
   ],
