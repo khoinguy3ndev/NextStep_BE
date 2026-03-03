@@ -6,6 +6,1551 @@
   "tables": [
     {
       "columns": {
+        "company_id": {
+          "name": "company_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "website": {
+          "name": "website",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "industry": {
+          "name": "industry",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "size": {
+          "name": "size",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "logo_url": {
+          "name": "logo_url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "companies",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "companies_name_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "companies_pkey",
+          "columnNames": [
+            "company_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "job_id": {
+          "name": "job_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "company_company_id": {
+          "name": "company_company_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "level": {
+          "name": "level",
+          "type": "job_level",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "nativeEnumName": "job_level",
+          "enumItems": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ],
+          "mappedType": "enum"
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "salary_min": {
+          "name": "salary_min",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "salary_max": {
+          "name": "salary_max",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "currency": {
+          "name": "currency",
+          "type": "currency",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "nativeEnumName": "currency",
+          "enumItems": [
+            "VND",
+            "USD"
+          ],
+          "mappedType": "enum"
+        },
+        "description_raw": {
+          "name": "description_raw",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "description_clean": {
+          "name": "description_clean",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "source_site": {
+          "name": "source_site",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "posted_at": {
+          "name": "posted_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "scraped_at": {
+          "name": "scraped_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "status": {
+          "name": "status",
+          "type": "job_status",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "job_status",
+          "default": "'active'",
+          "enumItems": [
+            "active",
+            "closed",
+            "draft"
+          ],
+          "mappedType": "enum"
+        }
+      },
+      "name": "jobs",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "source_url"
+          ],
+          "composite": false,
+          "keyName": "jobs_source_url_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "jobs_pkey",
+          "columnNames": [
+            "job_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "jobs_company_company_id_foreign": {
+          "constraintName": "jobs_company_company_id_foreign",
+          "columnNames": [
+            "company_company_id"
+          ],
+          "localTableName": "public.jobs",
+          "referencedColumnNames": [
+            "company_id"
+          ],
+          "referencedTableName": "public.companies",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "resource_id": {
+          "name": "resource_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "cost": {
+          "name": "cost",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "duration_hours": {
+          "name": "duration_hours",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "language": {
+          "name": "language",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "learning_resources",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "learning_resources_pkey",
+          "columnNames": [
+            "resource_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "doc_id": {
+          "name": "doc_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "type": {
+          "name": "type",
+          "type": "rag_document_type",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "rag_document_type",
+          "enumItems": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ],
+          "mappedType": "enum"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "language": {
+          "name": "language",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "rag_documents",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "rag_documents_pkey",
+          "columnNames": [
+            "doc_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "chunk_id": {
+          "name": "chunk_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "doc_doc_id": {
+          "name": "doc_doc_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "token_count": {
+          "name": "token_count",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector(1536)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1536,
+          "mappedType": "unknown"
+        },
+        "embedding_model": {
+          "name": "embedding_model",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "rag_chunks",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "rag_chunks_pkey",
+          "columnNames": [
+            "chunk_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "rag_chunks_doc_doc_id_foreign": {
+          "constraintName": "rag_chunks_doc_doc_id_foreign",
+          "columnNames": [
+            "doc_doc_id"
+          ],
+          "localTableName": "public.rag_chunks",
+          "referencedColumnNames": [
+            "doc_id"
+          ],
+          "referencedTableName": "public.rag_documents",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "skill_id": {
+          "name": "skill_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "aliases": {
+          "name": "aliases",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "true",
+          "mappedType": "boolean"
+        }
+      },
+      "name": "skills",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "skills_name_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "skills_pkey",
+          "columnNames": [
+            "skill_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "job_skill_id": {
+          "name": "job_skill_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "job_job_id": {
+          "name": "job_job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "skill_skill_id": {
+          "name": "skill_skill_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "importance": {
+          "name": "importance",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
+        },
+        "evidence_snippet": {
+          "name": "evidence_snippet",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        }
+      },
+      "name": "job_skills",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "job_skills_job_job_id_skill_skill_id_unique",
+          "columnNames": [
+            "job_job_id",
+            "skill_skill_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "job_skills_pkey",
+          "columnNames": [
+            "job_skill_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "job_skills_job_job_id_foreign": {
+          "constraintName": "job_skills_job_job_id_foreign",
+          "columnNames": [
+            "job_job_id"
+          ],
+          "localTableName": "public.job_skills",
+          "referencedColumnNames": [
+            "job_id"
+          ],
+          "referencedTableName": "public.jobs",
+          "updateRule": "cascade"
+        },
+        "job_skills_skill_skill_id_foreign": {
+          "constraintName": "job_skills_skill_skill_id_foreign",
+          "columnNames": [
+            "skill_skill_id"
+          ],
+          "localTableName": "public.job_skills",
+          "referencedColumnNames": [
+            "skill_id"
+          ],
+          "referencedTableName": "public.skills",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "requirement_id": {
+          "name": "requirement_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "job_job_id": {
+          "name": "job_job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "type": {
+          "name": "type",
+          "type": "requirement_type",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "requirement_type",
+          "enumItems": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ],
+          "mappedType": "enum"
+        },
+        "raw_text": {
+          "name": "raw_text",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "years_exp": {
+          "name": "years_exp",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "normalized_skill_skill_id": {
+          "name": "normalized_skill_skill_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        }
+      },
+      "name": "job_requirements",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "job_requirements_pkey",
+          "columnNames": [
+            "requirement_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "job_requirements_job_job_id_foreign": {
+          "constraintName": "job_requirements_job_job_id_foreign",
+          "columnNames": [
+            "job_job_id"
+          ],
+          "localTableName": "public.job_requirements",
+          "referencedColumnNames": [
+            "job_id"
+          ],
+          "referencedTableName": "public.jobs",
+          "updateRule": "cascade"
+        },
+        "job_requirements_normalized_skill_skill_id_foreign": {
+          "constraintName": "job_requirements_normalized_skill_skill_id_foreign",
+          "columnNames": [
+            "normalized_skill_skill_id"
+          ],
+          "localTableName": "public.job_requirements",
+          "referencedColumnNames": [
+            "skill_id"
+          ],
+          "referencedTableName": "public.skills",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
         "user_id": {
           "name": "user_id",
           "type": "serial",
@@ -44,6 +1589,20 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'user'",
+          "enumItems": [
+            "user",
+            "admin"
+          ],
+          "mappedType": "enum"
         },
         "created_at": {
           "name": "created_at",
@@ -102,8 +1661,1987 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "profile_id": {
+          "name": "profile_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "user_user_id": {
+          "name": "user_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "desired_salary_min": {
+          "name": "desired_salary_min",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "desired_salary_max": {
+          "name": "desired_salary_max",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "currency": {
+          "name": "currency",
+          "type": "currency",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "nativeEnumName": "currency",
+          "enumItems": [
+            "VND",
+            "USD"
+          ],
+          "mappedType": "enum"
+        },
+        "locations": {
+          "name": "locations",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "target_levels": {
+          "name": "target_levels",
+          "type": "job_level[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "job_level",
+          "default": "'{}'",
+          "enumItems": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ],
+          "mappedType": "array"
+        },
+        "target_titles": {
+          "name": "target_titles",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "industries": {
+          "name": "industries",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        }
+      },
+      "name": "search_profiles",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "search_profiles_pkey",
+          "columnNames": [
+            "profile_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "search_profiles_user_user_id_foreign": {
+          "constraintName": "search_profiles_user_user_id_foreign",
+          "columnNames": [
+            "user_user_id"
+          ],
+          "localTableName": "public.search_profiles",
+          "referencedColumnNames": [
+            "user_id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "roadmap_id": {
+          "name": "roadmap_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "user_user_id": {
+          "name": "user_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "target_job_job_id": {
+          "name": "target_job_job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "goal_title": {
+          "name": "goal_title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "timeframe_weeks": {
+          "name": "timeframe_weeks",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "status": {
+          "name": "status",
+          "type": "roadmap_status",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "roadmap_status",
+          "default": "'draft'",
+          "enumItems": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ],
+          "mappedType": "enum"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "roadmaps",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "roadmaps_pkey",
+          "columnNames": [
+            "roadmap_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "roadmaps_user_user_id_foreign": {
+          "constraintName": "roadmaps_user_user_id_foreign",
+          "columnNames": [
+            "user_user_id"
+          ],
+          "localTableName": "public.roadmaps",
+          "referencedColumnNames": [
+            "user_id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        },
+        "roadmaps_target_job_job_id_foreign": {
+          "constraintName": "roadmaps_target_job_job_id_foreign",
+          "columnNames": [
+            "target_job_job_id"
+          ],
+          "localTableName": "public.roadmaps",
+          "referencedColumnNames": [
+            "job_id"
+          ],
+          "referencedTableName": "public.jobs",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "item_id": {
+          "name": "item_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "roadmap_roadmap_id": {
+          "name": "roadmap_roadmap_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "skill_skill_id": {
+          "name": "skill_skill_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "estimated_weeks": {
+          "name": "estimated_weeks",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "resource_resource_id": {
+          "name": "resource_resource_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        }
+      },
+      "name": "roadmap_items",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "roadmap_items_pkey",
+          "columnNames": [
+            "item_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "roadmap_items_roadmap_roadmap_id_foreign": {
+          "constraintName": "roadmap_items_roadmap_roadmap_id_foreign",
+          "columnNames": [
+            "roadmap_roadmap_id"
+          ],
+          "localTableName": "public.roadmap_items",
+          "referencedColumnNames": [
+            "roadmap_id"
+          ],
+          "referencedTableName": "public.roadmaps",
+          "updateRule": "cascade"
+        },
+        "roadmap_items_skill_skill_id_foreign": {
+          "constraintName": "roadmap_items_skill_skill_id_foreign",
+          "columnNames": [
+            "skill_skill_id"
+          ],
+          "localTableName": "public.roadmap_items",
+          "referencedColumnNames": [
+            "skill_id"
+          ],
+          "referencedTableName": "public.skills",
+          "updateRule": "cascade"
+        },
+        "roadmap_items_resource_resource_id_foreign": {
+          "constraintName": "roadmap_items_resource_resource_id_foreign",
+          "columnNames": [
+            "resource_resource_id"
+          ],
+          "localTableName": "public.roadmap_items",
+          "referencedColumnNames": [
+            "resource_id"
+          ],
+          "referencedTableName": "public.learning_resources",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "cv_id": {
+          "name": "cv_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "user_user_id": {
+          "name": "user_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "file_url": {
+          "name": "file_url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "parsed_text": {
+          "name": "parsed_text",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "language": {
+          "name": "language",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "uploaded_at": {
+          "name": "uploaded_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "version": {
+          "name": "version",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
+        }
+      },
+      "name": "cv_documents",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "cv_documents_pkey",
+          "columnNames": [
+            "cv_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "cv_documents_user_user_id_foreign": {
+          "constraintName": "cv_documents_user_user_id_foreign",
+          "columnNames": [
+            "user_user_id"
+          ],
+          "localTableName": "public.cv_documents",
+          "referencedColumnNames": [
+            "user_id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "match_id": {
+          "name": "match_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "user_user_id": {
+          "name": "user_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "cv_cv_id": {
+          "name": "cv_cv_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "job_job_id": {
+          "name": "job_job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "score": {
+          "name": "score",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
+        },
+        "score_breakdown_json": {
+          "name": "score_breakdown_json",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
+        },
+        "missing_skills": {
+          "name": "missing_skills",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "matched_skills": {
+          "name": "matched_skills",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "job_matches",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "job_matches_cv_cv_id_job_job_id_unique",
+          "columnNames": [
+            "cv_cv_id",
+            "job_job_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "job_matches_pkey",
+          "columnNames": [
+            "match_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "job_matches_user_user_id_foreign": {
+          "constraintName": "job_matches_user_user_id_foreign",
+          "columnNames": [
+            "user_user_id"
+          ],
+          "localTableName": "public.job_matches",
+          "referencedColumnNames": [
+            "user_id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        },
+        "job_matches_cv_cv_id_foreign": {
+          "constraintName": "job_matches_cv_cv_id_foreign",
+          "columnNames": [
+            "cv_cv_id"
+          ],
+          "localTableName": "public.job_matches",
+          "referencedColumnNames": [
+            "cv_id"
+          ],
+          "referencedTableName": "public.cv_documents",
+          "updateRule": "cascade"
+        },
+        "job_matches_job_job_id_foreign": {
+          "constraintName": "job_matches_job_job_id_foreign",
+          "columnNames": [
+            "job_job_id"
+          ],
+          "localTableName": "public.job_matches",
+          "referencedColumnNames": [
+            "job_id"
+          ],
+          "referencedTableName": "public.jobs",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "cv_skill_id": {
+          "name": "cv_skill_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "cv_cv_id": {
+          "name": "cv_cv_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "skill_skill_id": {
+          "name": "skill_skill_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "proficiency": {
+          "name": "proficiency",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
+        },
+        "years_exp": {
+          "name": "years_exp",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "float"
+        },
+        "evidence_snippet": {
+          "name": "evidence_snippet",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        }
+      },
+      "name": "cv_skills",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "cv_skills_cv_cv_id_skill_skill_id_unique",
+          "columnNames": [
+            "cv_cv_id",
+            "skill_skill_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "cv_skills_pkey",
+          "columnNames": [
+            "cv_skill_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "cv_skills_cv_cv_id_foreign": {
+          "constraintName": "cv_skills_cv_cv_id_foreign",
+          "columnNames": [
+            "cv_cv_id"
+          ],
+          "localTableName": "public.cv_skills",
+          "referencedColumnNames": [
+            "cv_id"
+          ],
+          "referencedTableName": "public.cv_documents",
+          "updateRule": "cascade"
+        },
+        "cv_skills_skill_skill_id_foreign": {
+          "constraintName": "cv_skills_skill_skill_id_foreign",
+          "columnNames": [
+            "skill_skill_id"
+          ],
+          "localTableName": "public.cv_skills",
+          "referencedColumnNames": [
+            "skill_id"
+          ],
+          "referencedTableName": "public.skills",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "section_id": {
+          "name": "section_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "cv_cv_id": {
+          "name": "cv_cv_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "type": {
+          "name": "type",
+          "type": "cv_section_type",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "cv_section_type",
+          "enumItems": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ],
+          "mappedType": "enum"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "order_index": {
+          "name": "order_index",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        }
+      },
+      "name": "cv_sections",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "cv_sections_pkey",
+          "columnNames": [
+            "section_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "cv_sections_cv_cv_id_foreign": {
+          "constraintName": "cv_sections_cv_cv_id_foreign",
+          "columnNames": [
+            "cv_cv_id"
+          ],
+          "localTableName": "public.cv_sections",
+          "referencedColumnNames": [
+            "cv_id"
+          ],
+          "referencedTableName": "public.cv_documents",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "request_id": {
+          "name": "request_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "user_user_id": {
+          "name": "user_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "cv_cv_id": {
+          "name": "cv_cv_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "job_job_id": {
+          "name": "job_job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "model": {
+          "name": "model",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "status": {
+          "name": "status",
+          "type": "analysis_status",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "analysis_status",
+          "default": "'pending'",
+          "enumItems": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ],
+          "mappedType": "enum"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "analysis_requests",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "analysis_requests_pkey",
+          "columnNames": [
+            "request_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "analysis_requests_user_user_id_foreign": {
+          "constraintName": "analysis_requests_user_user_id_foreign",
+          "columnNames": [
+            "user_user_id"
+          ],
+          "localTableName": "public.analysis_requests",
+          "referencedColumnNames": [
+            "user_id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        },
+        "analysis_requests_cv_cv_id_foreign": {
+          "constraintName": "analysis_requests_cv_cv_id_foreign",
+          "columnNames": [
+            "cv_cv_id"
+          ],
+          "localTableName": "public.analysis_requests",
+          "referencedColumnNames": [
+            "cv_id"
+          ],
+          "referencedTableName": "public.cv_documents",
+          "updateRule": "cascade"
+        },
+        "analysis_requests_job_job_id_foreign": {
+          "constraintName": "analysis_requests_job_job_id_foreign",
+          "columnNames": [
+            "job_job_id"
+          ],
+          "localTableName": "public.analysis_requests",
+          "referencedColumnNames": [
+            "job_id"
+          ],
+          "referencedTableName": "public.jobs",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
+    },
+    {
+      "columns": {
+        "result_id": {
+          "name": "result_id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "request_request_id": {
+          "name": "request_request_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "gap_analysis_json": {
+          "name": "gap_analysis_json",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
+        },
+        "recommended_skills": {
+          "name": "recommended_skills",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'{}'",
+          "mappedType": "array"
+        },
+        "roadmap_json": {
+          "name": "roadmap_json",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "analysis_results",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "request_request_id"
+          ],
+          "composite": false,
+          "keyName": "analysis_results_request_request_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "analysis_results_pkey",
+          "columnNames": [
+            "result_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "analysis_results_request_request_id_foreign": {
+          "constraintName": "analysis_results_request_request_id_foreign",
+          "columnNames": [
+            "request_request_id"
+          ],
+          "localTableName": "public.analysis_results",
+          "referencedColumnNames": [
+            "request_id"
+          ],
+          "referencedTableName": "public.analysis_requests",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "job_level": {
+          "name": "job_level",
+          "schema": "public",
+          "items": [
+            "intern",
+            "junior",
+            "mid",
+            "senior",
+            "lead"
+          ]
+        },
+        "currency": {
+          "name": "currency",
+          "schema": "public",
+          "items": [
+            "VND",
+            "USD"
+          ]
+        },
+        "job_status": {
+          "name": "job_status",
+          "schema": "public",
+          "items": [
+            "active",
+            "closed",
+            "draft"
+          ]
+        },
+        "rag_document_type": {
+          "name": "rag_document_type",
+          "schema": "public",
+          "items": [
+            "job_market",
+            "course",
+            "skill_guide",
+            "role_profile"
+          ]
+        },
+        "requirement_type": {
+          "name": "requirement_type",
+          "schema": "public",
+          "items": [
+            "skill",
+            "degree",
+            "experience",
+            "language",
+            "other"
+          ]
+        },
+        "roadmap_status": {
+          "name": "roadmap_status",
+          "schema": "public",
+          "items": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "cv_section_type": {
+          "name": "cv_section_type",
+          "schema": "public",
+          "items": [
+            "education",
+            "experience",
+            "project",
+            "skill",
+            "certification",
+            "other"
+          ]
+        },
+        "analysis_status": {
+          "name": "analysis_status",
+          "schema": "public",
+          "items": [
+            "pending",
+            "running",
+            "completed",
+            "failed"
+          ]
+        }
+      }
     }
   ],
-  "nativeEnums": {}
+  "nativeEnums": {
+    "job_level": {
+      "name": "job_level",
+      "schema": "public",
+      "items": [
+        "intern",
+        "junior",
+        "mid",
+        "senior",
+        "lead"
+      ]
+    },
+    "currency": {
+      "name": "currency",
+      "schema": "public",
+      "items": [
+        "VND",
+        "USD"
+      ]
+    },
+    "job_status": {
+      "name": "job_status",
+      "schema": "public",
+      "items": [
+        "active",
+        "closed",
+        "draft"
+      ]
+    },
+    "rag_document_type": {
+      "name": "rag_document_type",
+      "schema": "public",
+      "items": [
+        "job_market",
+        "course",
+        "skill_guide",
+        "role_profile"
+      ]
+    },
+    "requirement_type": {
+      "name": "requirement_type",
+      "schema": "public",
+      "items": [
+        "skill",
+        "degree",
+        "experience",
+        "language",
+        "other"
+      ]
+    },
+    "roadmap_status": {
+      "name": "roadmap_status",
+      "schema": "public",
+      "items": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "cv_section_type": {
+      "name": "cv_section_type",
+      "schema": "public",
+      "items": [
+        "education",
+        "experience",
+        "project",
+        "skill",
+        "certification",
+        "other"
+      ]
+    },
+    "analysis_status": {
+      "name": "analysis_status",
+      "schema": "public",
+      "items": [
+        "pending",
+        "running",
+        "completed",
+        "failed"
+      ]
+    }
+  }
 }
