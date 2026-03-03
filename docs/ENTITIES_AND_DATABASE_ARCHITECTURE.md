@@ -762,25 +762,340 @@ RagDocument
 
 ---
 
+## 🧮 Công Thức Tính Toán (Calculation Formulas)
+
+### **1. Job Matching Score (Điểm Phù Hợp Công Việc)**
+
+**Công thức chính:**
+```
+Score = 0.55 × f_skill + 0.15 × f_exp + 0.10 × f_level + 0.10 × f_salary + 0.10 × f_location
+```
+
+**Trong đó:**
+
+#### **a) Skill Match (f_skill) - 55% trọng số**
+```
+f_skill = Σ(w_s × p_s) / Σ(w_s)
+
+Trong đó:
+- S_j = tập kỹ năng Job yêu cầu
+- S_c = tập kỹ năng CV có
+- w_s = trọng số kỹ năng từ JobSkill.importance (0-1)
+- p_s = proficiency level từ CvSkill.proficiency (0-1)
+
+Ví dụ:
+Job yêu cầu: React (w=0.9), Node.js (w=0.8), TypeScript (w=0.7)
+CV có: React (p=0.9), Node.js (p=0.7), Docker (p=0.8 - nhưng không yêu cầu)
+
+f_skill = (0.9×0.9 + 0.8×0.7) / (0.9 + 0.8 + 0.7)
+        = (0.81 + 0.56) / 2.4
+        = 1.37 / 2.4
+        = 0.571 → 57.1%
+```
+
+#### **b) Experience Match (f_exp) - 15% trọng số**
+```
+f_exp = min(1, y_cv / y_job)
+
+Trong đó:
+- y_cv = số năm kinh nghiệm trong CV
+- y_job = số năm kinh nghiệm yêu cầu (từ Job.level hoặc JobRequirement)
+
+Level mapping:
+- JUNIOR: 0-2 năm
+- MID: 2-5 năm
+- SENIOR: 5+ năm
+
+Ví dụ:
+CV có 3 năm, Job yêu cầu 5 năm
+f_exp = min(1, 3/5) = 0.6 → 60%
+```
+
+#### **c) Level Match (f_level) - 10% trọng số**
+```
+f_level = {
+  1.0  nếu cvLevel == jobLevel (exact match)
+  0.6  nếu |cvLevel - jobLevel| == 1 level difference
+  0.0  nếu khác
+}
+
+Mapping:
+INTERN (0) → JUNIOR (1) → MID (2) → SENIOR (3) → LEAD (4)
+
+Ví dụ:
+CV: JUNIOR (1), Job: MID (2)
+f_level = 0.6 (1 level chênh lệch)
+
+CV: JUNIOR (1), Job: SENIOR (3)
+f_level = 0.0 (2 level chênh lệch)
+```
+
+#### **d) Salary Match (f_salary) - 10% trọng số**
+```
+f_salary = max(0, (min(u_max, j_max) - max(u_min, j_min))) / (u_max - u_min)
+
+Trong đó:
+- [u_min, u_max] = mức lương mong muốn (từ SearchProfile)
+- [j_min, j_max] = mức lương Job cung cấp (từ Job.salaryMin/Max)
+
+Ví dụ:
+Mong muốn: 2000-3000 USD
+Job cung cấp: 2500-3500 USD
+
+f_salary = (min(3000, 3500) - max(2000, 2500)) / (3000 - 2000)
+         = (3000 - 2500) / 1000
+         = 500 / 1000
+         = 0.5 → 50%
+
+Trường hợp không overlap:
+Mong muốn: 3000-4000 USD
+Job: 1000-2000 USD
+f_salary = max(0, ...) = 0.0 → 0%
+```
+
+#### **e) Location Match (f_location) - 10% trọng số**
+```
+f_location = {
+  1.0  nếu job.location nằm trong SearchProfile.locations
+  0.8  nếu job.remote == true
+  0.0  nếu không match
+}
+```
+
+#### **Final Score Calculation:**
+```typescript
+// Pseudocode
+function calculateJobMatch(cv: CvDocument, job: Job, searchProfile: SearchProfile): JobMatch {
+  const fSkill = calculateSkillMatch(cv, job);
+  const fExp = calculateExperienceMatch(cv, job);
+  const fLevel = calculateLevelMatch(cv, job);
+  const fSalary = calculateSalaryMatch(job, searchProfile);
+  const fLocation = calculateLocationMatch(job, searchProfile);
+  
+  const score = 0.55*fSkill + 0.15*fExp + 0.10*fLevel + 0.10*fSalary + 0.10*fLocation;
+  
+  return {
+    score: Math.round(score * 100), // 0-100
+    scoreBreakdownJson: {
+      skillMatch: Math.round(fSkill * 100),
+      experienceMatch: Math.round(fExp * 100),
+      levelMatch: Math.round(fLevel * 100),
+      salaryMatch: Math.round(fSalary * 100),
+      locationMatch: Math.round(fLocation * 100)
+    },
+    missingSkills: cv_skills - job_skills,
+    matchedSkills: cv_skills ∩ job_skills
+  };
+}
+```
+
+---
+
+### **2. Gap Analysis Calculation (Phân Tích Khoảng Cách)**
+
+Được tính dựa trên sự khác biệt giữa CV và Job:
+
+```json
+{
+  "skillGap": {
+    "missing": [
+      {
+        "skill": "TypeScript",
+        "importance": "high",
+        "reason": "Required in JobSkill with importance 0.9"
+      }
+    ],
+    "weak": [
+      {
+        "skill": "React",
+        "current_proficiency": 0.6,
+        "required_proficiency": 0.9,
+        "gap": 0.3
+      }
+    ]
+  },
+  "experienceGap": {
+    "required_years": 5,
+    "current_years": 3,
+    "gap_weeks": 104  // 2 years in weeks
+  },
+  "levelGap": {
+    "cv_level": "JUNIOR",
+    "job_level": "SENIOR",
+    "gap_levels": 2
+  },
+  "certificationGap": {
+    "required": ["AWS Solutions Architect", "Kubernetes CKA"],
+    "have": [],
+    "missing": ["AWS Solutions Architect", "Kubernetes CKA"]
+  }
+}
+```
+
+---
+
+### **3. Roadmap Generation Logic (Logic Sinh Lộ Trình)**
+
+**Input:** AnalysisResult (gap analysis), Target Job, User profile
+
+**Algorithm:**
+```
+1. Extract missing skills từ gapAnalysisJson
+2. Sort theo:
+   a) Importance (high → medium → low)
+   b) Prerequisites (học trước dependencies)
+   c) Time estimate (quick wins first)
+3. For mỗi skill:
+   a) Estimate learning time from industry benchmarks
+   b) Find LearningResource từ database
+   c) Create RoadmapItem với priority & estimated_weeks
+4. Group theo phases (không quá 4-5 skill per phase)
+5. Calculate total timeframe = Σ(estimated_weeks)
+```
+
+**Example Output:**
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "duration_weeks": 8,
+      "title": "Foundation",
+      "skills": [
+        {
+          "skill_id": 12,
+          "skill_name": "TypeScript",
+          "priority": 5,
+          "estimated_weeks": 4,
+          "recommended_resources": [
+            {
+              "resource_id": 45,
+              "title": "TypeScript Deep Dive",
+              "provider": "Udemy",
+              "duration_hours": 20
+            }
+          ]
+        },
+        {
+          "skill_id": 34,
+          "skill_name": "Advanced Patterns",
+          "priority": 4,
+          "estimated_weeks": 4,
+          "recommended_resources": [...]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "duration_weeks": 10,
+      "title": "Applied Skills",
+      "skills": [...]
+    }
+  ],
+  "total_weeks": 18,
+  "estimated_completion": "2026-07-01",
+  "difficulty_level": "MEDIUM"
+}
+```
+
+---
+
+### **4. Skill Importance Calculation (Tính Trọng Số Kỹ Năng)**
+
+Dùng để xác định `JobSkill.importance`:
+
+```
+importance = (frequency_in_jobs × 0.4) + (salary_correlation × 0.3) + (level_requirement × 0.3)
+
+Trong đó:
+- frequency_in_jobs: % job trong market require skill này
+- salary_correlation: mức lương trung bình require skill / avg salary
+- level_requirement: JUNIOR(0.3) < MID(0.6) < SENIOR(1.0)
+```
+
+---
+
+### **5. Learning Time Estimation (Ước Lượng Thời Gian Học)**
+
+**Industry Benchmarks:**
+
+```
+Level | Time to Learn (hours) | Time in Weeks (20h/week)
+------|----------------------|------------------------
+Basic Concept | 10-20 | 1 week
+Intermediate | 30-50 | 2-3 weeks
+Advanced | 50-100 | 3-5 weeks
+Expert | 100+ | 5+ weeks
+
+Examples:
+- React Basics: 40h = 2 weeks
+- TypeScript: 50h = 2-3 weeks
+- System Design: 80h = 4 weeks
+- DevOps: 120h = 6 weeks
+```
+
+---
+
 ## 💡 Tips for Implementation
 
 ### **For Backend/API Developers:**
 1. **CV Parsing**: Implement proper parsing để extract CvSection, CvSkill
-2. **Job Matching**: Compute match scores dựa trên:
-   - Skill overlap
-   - Experience level match
-   - Location/Salary range
-3. **RAG Integration**: Implement vector search trên RagChunk
-4. **Analysis Job Queue**: Use job queue (BullMQ, Redis) cho AnalysisRequest processing
+2. **Job Matching Service**: Implement calculate functions theo công thức trên:
+   ```typescript
+   // src/services/job-matching.service.ts
+   calculateSkillMatch(cv: CvDocument, job: Job): number { ... }
+   calculateExperienceMatch(cv: CvDocument, job: Job): number { ... }
+   calculateLevelMatch(cv: CvDocument, job: Job): number { ... }
+   calculateSalaryMatch(job: Job, profile: SearchProfile): number { ... }
+   calculateLocationMatch(job: Job, profile: SearchProfile): number { ... }
+   calculateJobMatchScore(cv, job, profile): JobMatch { ... }
+   ```
+3. **Gap Analysis Service**: Parse LLM output thành structured gapAnalysisJson
+4. **Roadmap Generator**: Implement roadmap generation logic từ gap analysis
+5. **RAG Integration**: Implement vector search trên RagChunk (pgvector)
+6. **Analysis Job Queue**: Use BullMQ, Redis cho async AnalysisRequest processing
+7. **Caching**: Cache frequently accessed:
+   - Job data
+   - Skill importance weights
+   - RagChunk similarity results
 
 ### **For AI/LLM Developers:**
 1. **RAG Context**: Always include relevant RagChunk trong prompt
-2. **Structured Output**: Parse LLM output thành structured JSON (gapAnalysisJson, roadmapJson)
-3. **Error Handling**: Catch LLM failures, set AnalysisRequest.status = FAILED
-4. **Prompt Engineering**: Design prompts để:
-   - Extract skills từ job descriptions
-   - Generate realistic roadmaps
-   - Identify realistic gap analysis
+   - Include job market insights
+   - Include skill development best practices
+   - Include role-specific requirements
+2. **Structured Output**: Parse LLM output thành structured JSON:
+   ```json
+   {
+     "gapAnalysisJson": { ... },
+     "recommendedSkills": [...],
+     "roadmapJson": { ... }
+   }
+   ```
+3. **Gap Analysis Generation**: Prompts để:
+   ```
+   "Given CV: [skills], Job Requirements: [skills],
+    Analyze the gap and provide:
+    1. Missing skills with importance
+    2. Weak skills needing improvement
+    3. Experience gap in weeks
+    4. Certification requirements
+    Output as JSON matching GapAnalysisJson schema"
+   ```
+4. **Roadmap Generation**: Prompts để:
+   ```
+   "Create a learning roadmap to bridge the skill gap:
+    - Sort skills by importance and prerequisites
+    - Estimate weeks for each skill using industry benchmarks
+    - Suggest resources from provided database
+    - Group into phases (max 4-5 skills per phase)
+    Output as JSON matching RoadmapJson schema"
+   ```
+5. **Error Handling**: Catch LLM failures, set AnalysisRequest.status = FAILED with error details
+6. **Validation**: Ensure roadmap:
+   - Total weeks <= 52 weeks (1 year default)
+   - Each phase has resources
+   - Skills are ordered by prerequisites
 
 ### **For Database Developers:**
 1. **Indexes**: Create indexes on frequently queried fields:
@@ -792,6 +1107,139 @@ RagDocument
 
 ---
 
+## 🎯 Calculation Reference Sheet (Tờ Tham Chiếu Công Thức)
+
+### **Quick Formula Reference**
+
+| Calculation | Formula | Weight | Output |
+|------------|---------|--------|--------|
+| Skill Match | Σ(w_s × p_s) / Σ(w_s) | 55% | 0.0-1.0 |
+| Exp Match | min(1, y_cv / y_job) | 15% | 0.0-1.0 |
+| Level Match | exact:1.0, diff1:0.6, else:0 | 10% | 0.0-1.0 |
+| Salary Match | (overlap) / (desired range) | 10% | 0.0-1.0 |
+| Location Match | match:1.0, remote:0.8, else:0 | 10% | 0.0-1.0 |
+| **Final Score** | **Σ(weight × component)** | **100%** | **0-100** |
+
+### **Score Interpretation**
+```
+90-100: Excellent fit - Apply immediately
+75-89:  Good fit - Can apply confidently
+60-74:  Moderate fit - Consider applying with strong motivation
+45-59:  Below average - Significant gaps to fill
+0-44:   Poor fit - Recommend focusing on other positions
+```
+
+### **Implementation Database Functions**
+
+```sql
+-- Calculate skill match for a CV vs Job
+CREATE OR REPLACE FUNCTION calculate_skill_match(
+  cv_id INTEGER,
+  job_id INTEGER
+) RETURNS FLOAT AS $$
+  SELECT COALESCE(
+    SUM(js.importance * cs.proficiency) / NULLIF(SUM(js.importance), 0),
+    0
+  )
+  FROM job_skills js
+  LEFT JOIN cv_skills cs ON js.skill_id = cs.skill_id AND cs.cv_id = $1
+  WHERE js.job_id = $2;
+$$ LANGUAGE SQL;
+
+-- Calculate experience match
+CREATE OR REPLACE FUNCTION calculate_experience_match(
+  cv_years FLOAT,
+  job_years FLOAT
+) RETURNS FLOAT AS $$
+  SELECT LEAST(1.0, COALESCE(cv_years / NULLIF(job_years, 0), 0));
+$$ LANGUAGE SQL;
+
+-- Calculate level match
+CREATE OR REPLACE FUNCTION calculate_level_match(
+  cv_level VARCHAR,
+  job_level VARCHAR
+) RETURNS FLOAT AS $$
+  SELECT CASE
+    WHEN cv_level = job_level THEN 1.0
+    WHEN ABS(
+      CASE cv_level WHEN 'intern' THEN 0 WHEN 'junior' THEN 1 WHEN 'mid' THEN 2 WHEN 'senior' THEN 3 ELSE 4 END -
+      CASE job_level WHEN 'intern' THEN 0 WHEN 'junior' THEN 1 WHEN 'mid' THEN 2 WHEN 'senior' THEN 3 ELSE 4 END
+    ) = 1 THEN 0.6
+    ELSE 0.0
+  END;
+$$ LANGUAGE SQL;
+
+-- Calculate final job match score
+CREATE OR REPLACE FUNCTION calculate_job_match_score(
+  cv_id INTEGER,
+  job_id INTEGER,
+  desired_min_salary BIGINT,
+  desired_max_salary BIGINT
+) RETURNS FLOAT AS $$
+  DECLARE
+    f_skill FLOAT;
+    f_exp FLOAT;
+    f_level FLOAT;
+    f_salary FLOAT;
+    f_location FLOAT;
+    cv_exp FLOAT;
+    job_exp FLOAT;
+    cv_level VARCHAR;
+    job_level VARCHAR;
+    salary_overlap BIGINT;
+  BEGIN
+    -- Calculate components
+    SELECT calculate_skill_match(cv_id, job_id) INTO f_skill;
+    
+    -- Get experience data
+    SELECT COALESCE(years_exp, 0) INTO cv_exp FROM cv_skills WHERE cv_id = cv_id LIMIT 1;
+    SELECT EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM posted_at) INTO job_exp 
+    FROM jobs WHERE job_id = job_id;
+    SELECT calculate_experience_match(cv_exp, COALESCE(job_exp, 2)) INTO f_exp;
+    
+    -- Get level data
+    SELECT 'mid' INTO cv_level; -- Replace with actual CV level from database
+    SELECT level INTO job_level FROM jobs WHERE job_id = job_id;
+    SELECT calculate_level_match(cv_level, job_level) INTO f_level;
+    
+    -- Calculate salary match
+    SELECT GREATEST(0::BIGINT, LEAST(desired_max_salary, max_salary) - GREATEST(desired_min_salary, min_salary))
+    INTO salary_overlap FROM jobs WHERE job_id = job_id;
+    f_salary := salary_overlap::FLOAT / (desired_max_salary - desired_min_salary);
+    
+    -- Calculate location match (simplified - hardcoded 1.0 for now)
+    f_location := 1.0;
+    
+    -- Return weighted sum
+    RETURN ROUND(
+      (0.55 * f_skill + 0.15 * f_exp + 0.10 * f_level + 0.10 * f_salary + 0.10 * f_location) * 100
+    );
+  END;
+$$ LANGUAGE PLPGSQL;
+```
+
+### **Vector Similarity Search for RAG**
+
+```sql
+-- Find most similar chunks for a query
+SELECT 
+  chunk_id,
+  doc_id,
+  content,
+  1 - (embedding <=> query_embedding) as similarity_score
+FROM rag_chunks
+ORDER BY embedding <=> (SELECT embedding FROM get_query_embedding('your query here'))
+LIMIT 10;
+
+-- Usage in LLM prompt:
+-- 1. Convert user question to embedding
+-- 2. Run similarity search above
+-- 3. Include top-5 chunks in prompt context
+-- 4. LLM generates response using context
+```
+
+---
+
 ## 📝 Ghi Chú
 
 - Tất cả timestamps (createdAt, updatedAt) được tạo automatically by MikroORM
@@ -800,7 +1248,46 @@ RagDocument
 - AnalysisRequest processing nên async để không block API
 - Cân nhắc caching cho RagChunk retrieval (Redis)
 
+### **Scoring Weights Configuration**
+Nên lưu trữ trọng số trong config hoặc database để dễ A/B testing:
+```json
+{
+  "scoring_weights": {
+    "skill_match": 0.55,
+    "experience_match": 0.15,
+    "level_match": 0.10,
+    "salary_match": 0.10,
+    "location_match": 0.10
+  },
+  "level_mapping": {
+    "intern": 0,
+    "junior": 1,
+    "mid": 2,
+    "senior": 3,
+    "lead": 4
+  },
+  "learning_time_benchmarks": {
+    "basic": 15,
+    "intermediate": 40,
+    "advanced": 80,
+    "expert": 150
+  }
+}
+```
+
+### **Performance Considerations**
+1. **Job Matching**: Compute scores async, cache results 24h
+2. **RAG Retrieval**: Use pgvector indexes, cache embeddings
+3. **Analysis**: Queue-based processing, prevent duplicate requests
+4. **Roadmap Generation**: Cache generated roadmaps, update on-demand
+
+### **Data Quality Notes**
+1. **JobSkill.importance**: Phải được validated trong range [0, 1]
+2. **CvSkill.proficiency**: Phải được normalized từ parsing
+3. **RagChunk.embedding**: Must be 1536 dimensions (text-embedding-3-small)
+4. **Job.salary***: Stored as cents (bigint) để tránh floating point issues
+
 ---
 
 **Cập nhật lần cuối**: 2026-03-03
-**Phiên bản**: 1.0
+**Phiên bản**: 1.1 (Added calculation formulas & implementation details)
