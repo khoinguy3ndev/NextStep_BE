@@ -1,75 +1,29 @@
-# Database design (PostgreSQL)
+# Database Design - Danh sách bảng và công dụng
 
-## Muc tieu
-- Luu du lieu job crawl, CV, skill, ket qua matching, phan tich va roadmap.
-- Ho tro RAG (chunk + embedding) va sinh roadmap theo tuan/thang.
+Tài liệu này liệt kê toàn bộ bảng được khai báo qua các entity trong `src/entities`.
 
-## ERD (Mermaid)
-```mermaid
-erDiagram
-  USER ||--o{ CV_DOCUMENT : owns
-  USER ||--o{ SEARCH_PROFILE : has
-  USER ||--o{ JOB_MATCH : gets
-  USER ||--o{ ROADMAP : plans
-  COMPANY ||--o{ JOB : posts
+| STT | Tên bảng | Công dụng |
+|---|---|---|
+| 1 | `users` | Lưu thông tin tài khoản người dùng (email, mật khẩu, tên, vai trò, thời gian tạo/cập nhật). |
+| 2 | `companies` | Lưu hồ sơ công ty tuyển dụng (tên, website, ngành nghề, quy mô, địa điểm, logo). |
+| 3 | `jobs` | Lưu bài đăng việc làm (title, level, lương, mô tả, nguồn crawl, trạng thái). |
+| 4 | `skills` | Danh mục kỹ năng chuẩn hoá dùng chung cho job, CV và roadmap. |
+| 5 | `job_skills` | Bảng liên kết job - skill, thể hiện kỹ năng yêu cầu và mức độ quan trọng. |
+| 6 | `job_requirements` | Lưu từng requirement trích từ JD (loại requirement, raw text, số năm kinh nghiệm, skill chuẩn hoá nếu có). |
+| 7 | `cv_documents` | Lưu CV người dùng (file URL, văn bản đã parse, ngôn ngữ, version, thời điểm upload). |
+| 8 | `cv_sections` | Lưu các section trong CV (education/experience/...) theo thứ tự hiển thị. |
+| 9 | `cv_skills` | Bảng liên kết CV - skill, lưu mức độ thành thạo, số năm kinh nghiệm và bằng chứng trích đoạn. |
+| 10 | `search_profiles` | Lưu hồ sơ tìm việc của user (mức lương mong muốn, địa điểm, cấp bậc, vị trí, ngành). |
+| 11 | `job_matches` | Lưu kết quả matching giữa CV và job (điểm phù hợp, kỹ năng thiếu/khớp, breakdown). |
+| 12 | `analysis_requests` | Lưu yêu cầu phân tích AI (người gửi, CV, job mục tiêu, prompt, model, trạng thái). |
+| 13 | `analysis_results` | Lưu kết quả trả về từ phân tích AI (summary, gap analysis, skills đề xuất, roadmap JSON). |
+| 14 | `roadmaps` | Lưu kế hoạch học tập/phát triển nghề nghiệp cho user theo mục tiêu cụ thể. |
+| 15 | `roadmap_items` | Lưu từng hạng mục trong roadmap (skill cần học, độ ưu tiên, thời lượng, ghi chú, resource). |
+| 16 | `learning_resources` | Lưu nguồn học tập (khóa học/tài liệu) dùng để gợi ý trong roadmap. |
+| 17 | `rag_documents` | Lưu tài liệu nguồn cho hệ thống RAG (loại tài liệu, nội dung, nguồn, ngôn ngữ). |
+| 18 | `rag_chunks` | Lưu các đoạn chunk từ tài liệu RAG kèm embedding vector để truy vấn ngữ nghĩa. |
 
-  JOB ||--o{ JOB_SKILL : requires
-  SKILL ||--o{ JOB_SKILL : is_required
-  JOB ||--o{ JOB_REQUIREMENT : has
+## Ghi chú
 
-  CV_DOCUMENT ||--o{ CV_SECTION : contains
-  CV_DOCUMENT ||--o{ CV_SKILL : extracts
-  SKILL ||--o{ CV_SKILL : extracted
-
-  JOB ||--o{ JOB_MATCH : matched
-  CV_DOCUMENT ||--o{ JOB_MATCH : matched
-
-  RAG_DOCUMENT ||--o{ RAG_CHUNK : chunked
-  ANALYSIS_REQUEST ||--|| ANALYSIS_RESULT : produces
-  USER ||--o{ ANALYSIS_REQUEST : requests
-  CV_DOCUMENT ||--o{ ANALYSIS_REQUEST : uses
-  JOB ||--o{ ANALYSIS_REQUEST : compares
-
-  ROADMAP ||--o{ ROADMAP_ITEM : contains
-  SKILL ||--o{ ROADMAP_ITEM : targets
-  LEARNING_RESOURCE ||--o{ ROADMAP_ITEM : uses
-```
-
-## RAG pipeline mapping
-1. Crawl jobs -> luu `Job.descriptionRaw`.
-2. Clean/normalize JD -> `Job.descriptionClean`.
-3. Extract skills/requirements -> `JobSkill`, `JobRequirement`.
-4. Tao RAG docs (JD + course + skill guide) -> `RagDocument`.
-5. Chunk + embed -> `RagChunk` (pgvector).
-6. Query: CV + JD -> retrieve top-K chunks.
-7. LLM sinh ket qua -> luu `AnalysisResult`, `Roadmap`, `RoadmapItem`.
-
-## Scoring cong khai (rule-based)
-- Skill match:
-$$
-\,f_{skill} = \frac{\sum_{s \in S_j \cap S_c} w_s \cdot p_s}{\sum_{s \in S_j} w_s}
-$$
-- Salary fit:
-$$
-\,f_{sal} = \frac{\max(0, \min(u_{max}, j_{max}) - \max(u_{min}, j_{min}))}{u_{max} - u_{min}}
-$$
-- Experience fit:
-$$
-\,f_{exp} = \min(1, \frac{y_c}{y_j})
-$$
-- Final score:
-$$
-Score = 0.55 f_{skill} + 0.15 f_{exp} + 0.10 f_{lvl} + 0.10 f_{sal} + 0.10 f_{loc}
-$$
-
-## Trong so de xuat
-- Skill: 0.55
-- Experience: 0.15
-- Level: 0.10
-- Salary: 0.10
-- Location: 0.10
-
-## Ghi chu ky thuat
-- Dung enum native cua Postgres cho cac truong `@Enum`.
-- Luu luong theo integer (cents) de tranh loi lam tron.
-- Embedding su dung pgvector, can `CREATE EXTENSION vector`.
+- Các enum PostgreSQL tương ứng (ví dụ: `job_status`, `job_level`, `currency`, `analysis_status`, ...) được dùng để ràng buộc giá trị một số cột, nhưng không phải bảng dữ liệu độc lập.
+- Một số bảng đóng vai trò bảng liên kết nhiều-nhiều có thêm thuộc tính nghiệp vụ: `job_skills`, `cv_skills`.
