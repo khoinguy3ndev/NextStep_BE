@@ -51,9 +51,11 @@ export class Job {
   @Enum({ items: () => Currency, nativeEnumName: 'currency', nullable: true })
   currency?: Currency;
 
+  @Field()
   @Property({ type: 'text' })
   descriptionRaw!: string;
 
+  @Field({ nullable: true })
   @Property({ type: 'text', nullable: true })
   descriptionClean?: string;
 
