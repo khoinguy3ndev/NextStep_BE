@@ -52,11 +52,13 @@ export class JobService {
       .offset(offset)
       .getResultAndCount();
 
+    await this.em.populate(items, ["skills"]);
+
     return { items, totalCount };
   }
 
   async findById(jobId: number): Promise<Job | null> {
-    return this.em.findOne(Job, { jobId }, { populate: ["company"] });
+    return this.em.findOne(Job, { jobId }, { populate: ["company", "skills"] });
   }
 
   async createJob(input: CreateJobInput): Promise<Job> {

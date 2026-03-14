@@ -1,17 +1,19 @@
 import {
   Collection,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryKey,
   Property,
-} from '@mikro-orm/core';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { CvSkill } from './cv-skill.entity';
-import { JobSkill } from './job-skill.entity';
-import { RoadmapItem } from './roadmap-item.entity';
+} from "@mikro-orm/core";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { CvSkill } from "./cv-skill.entity";
+import { Job } from "./job.entity";
+import { JobSkill } from "./job-skill.entity";
+import { RoadmapItem } from "./roadmap-item.entity";
 
 @ObjectType()
-@Entity({ tableName: 'skills' })
+@Entity({ tableName: "skills" })
 export class Skill {
   @Field(() => ID)
   @PrimaryKey()
@@ -26,7 +28,7 @@ export class Skill {
   category?: string;
 
   @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
+  @Property({ type: "text[]", default: [] })
   aliases: string[] = [];
 
   @Field()
@@ -35,6 +37,9 @@ export class Skill {
 
   @OneToMany(() => JobSkill, (jobSkill) => jobSkill.skill)
   jobSkills = new Collection<JobSkill>(this);
+
+  @ManyToMany({ entity: () => Job, mappedBy: "skills" })
+  jobs = new Collection<Job>(this);
 
   @OneToMany(() => CvSkill, (cvSkill) => cvSkill.skill)
   cvSkills = new Collection<CvSkill>(this);
