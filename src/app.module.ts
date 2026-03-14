@@ -13,6 +13,7 @@ import { UserModule } from "./modules/user/user.module";
 import { JobModule } from "./modules/job/job.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { CvModule } from "./modules/cv/cv.module";
+import { SkillModule } from "src/modules/skill/skill.module";
 @Module({
   imports: [
     MikroOrmModule.forRoot(mikroOrmConfig),
@@ -28,6 +29,7 @@ import { CvModule } from "./modules/cv/cv.module";
     JobModule,
     CompanyModule,
     CvModule,
+    SkillModule,
   ],
   providers: [AppService, AppResolver],
 })

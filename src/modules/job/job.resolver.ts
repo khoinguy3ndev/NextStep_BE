@@ -3,14 +3,16 @@ import { JobService } from "./job.service";
 import { Job } from "src/entities/job.entity";
 import { CreateJobInput } from "./dto/create-job.input";
 import { UpdateJobInput } from "./dto/update-job.input";
+import { GetJobsArgs } from "./dto/get-jobs.args";
+import { JobPagination } from "./dto/job-pagination.output";
 
 @Resolver(() => Job)
 export class JobResolver {
   constructor(private readonly jobService: JobService) {}
 
-  @Query(() => [Job])
-  async getAllJobs(): Promise<Job[]> {
-    return this.jobService.findAll();
+  @Query(() => JobPagination)
+  async getJobs(@Args() args: GetJobsArgs): Promise<JobPagination> {
+    return this.jobService.findAll(args);
   }
 
   @Query(() => Job, { nullable: true })
