@@ -1,8 +1,11 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { QueryOrder } from "@mikro-orm/core";
 import { Job } from "src/entities/job.entity";
 import { CreateJobInput } from "./dto/create-job.input";
 import { UpdateJobInput } from "./dto/update-job.input";
+import { GetJobsArgs } from "./dto/get-jobs.args";
+import { JobPagination } from "./dto/job-pagination.output";
 import { Company } from "src/entities/company.entity";
 import { JobStatus } from "src/entities/job-status.enum";
 
@@ -10,9 +13,46 @@ import { JobStatus } from "src/entities/job-status.enum";
 export class JobService {
   constructor(private readonly em: EntityManager) {}
 
-  async findAll(): Promise<Job[]> {
-    // populate: ['company'] giúp lấy luôn thông tin công ty ra cùng với Job
-    return this.em.find(Job, {}, { populate: ["company"] });
+  async findAll(args: GetJobsArgs): Promise<JobPagination> {
+    const { search, location, level, minSalary, maxSalary, limit, offset } =
+      args;
+
+    const qb = this.em
+      .createQueryBuilder(Job, "j")
+      .leftJoinAndSelect("j.company", "c");
+
+    if (search) {
+      qb.andWhere({
+        $or: [
+          { title: { $ilike: `%${search}%` } },
+          { company: { name: { $ilike: `%${search}%` } } },
+        ],
+      });
+    }
+
+    if (location) {
+      qb.andWhere({ location: { $ilike: `%${location}%` } });
+    }
+
+    if (level) {
+      qb.andWhere({ level });
+    }
+
+    if (minSalary !== undefined && minSalary !== null) {
+      qb.andWhere({ salaryMax: { $gte: minSalary } });
+    }
+
+    if (maxSalary !== undefined && maxSalary !== null) {
+      qb.andWhere({ salaryMin: { $lte: maxSalary } });
+    }
+
+    const [items, totalCount] = await qb
+      .orderBy({ postedAt: QueryOrder.DESC })
+      .limit(limit)
+      .offset(offset)
+      .getResultAndCount();
+
+    return { items, totalCount };
   }
 
   async findById(jobId: number): Promise<Job | null> {
