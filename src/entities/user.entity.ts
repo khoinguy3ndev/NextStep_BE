@@ -1,16 +1,9 @@
-import {
-  Entity,
-  Enum,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Role } from './role.enum';
-
+import { Entity, Enum, PrimaryKey, Property, Unique } from "@mikro-orm/core";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { Role } from "./role.enum";
 
 @ObjectType()
-@Entity({ tableName: 'users' })
+@Entity({ tableName: "users" })
 export class User {
   @Field(() => ID)
   @PrimaryKey()
@@ -21,12 +14,21 @@ export class User {
   @Unique()
   email!: string;
 
-  @Property()
-  password!: string;
+  @Property({ nullable: true })
+  password?: string;
 
   @Field()
   @Property()
   name!: string;
+
+  @Field({ nullable: true })
+  @Property({ nullable: true })
+  avatar?: string;
+
+  @Field({ nullable: true })
+  @Property({ unique: true, nullable: true })
+  @Unique()
+  googleId?: string;
 
   @Field(() => Role)
   @Enum({ items: () => Role, default: Role.USER })
@@ -39,5 +41,4 @@ export class User {
   @Field()
   @Property({ onUpdate: () => new Date(), nullable: true })
   updatedAt?: Date;
-
 }
