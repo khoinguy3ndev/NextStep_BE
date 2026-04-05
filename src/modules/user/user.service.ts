@@ -54,4 +54,32 @@ export class UserService {
     await this.em.persistAndFlush(user);
     return user;
   }
+
+  async updateUserProfile(
+    userId: number,
+    data: { name?: string; avatar?: string },
+  ): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException("Không tìm thấy người dùng!");
+    }
+
+    if (data.name) {
+      user.name = data.name;
+    }
+    if (data.avatar !== undefined) {
+      user.avatar = data.avatar;
+    }
+
+    await this.em.persistAndFlush(user);
+    return user;
+  }
+
+  async deleteUserAccount(userId: number): Promise<boolean> {
+    const user = await this.findById(userId);
+    if (!user) return false;
+
+    await this.em.removeAndFlush(user);
+    return true;
+  }
 }
