@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthResolver } from "./auth.resolver";
 import { UserModule } from "../user/user.module";
@@ -13,7 +13,7 @@ dotenv.config();
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     PassportModule.register({ session: false }),
     JwtModule.registerAsync({
       useFactory: () => ({

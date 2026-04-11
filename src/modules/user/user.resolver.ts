@@ -31,13 +31,13 @@ export class UserResolver {
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard)
   async updateUserProfile(
-    @Args("name", { nullable: true }) name: string | null,
-    @Args("avatar", { nullable: true }) avatar: string | null,
     @CurrentUser() user: User,
+    @Args("name", { type: () => String, nullable: true }) name?: string,
+    @Args("avatar", { type: () => String, nullable: true }) avatar?: string,
   ): Promise<User> {
     return this.userService.updateUserProfile(user.userId, {
-      name: name || undefined,
-      avatar: avatar || undefined,
+      name,
+      avatar,
     });
   }
 
