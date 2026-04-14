@@ -18,6 +18,10 @@ export class SkillService {
     return this.em.find(Skill, {}, { orderBy: { name: "ASC" } });
   }
 
+  async findSkillById(skillId: number): Promise<Skill | null> {
+    return this.em.findOne(Skill, { skillId });
+  }
+
   async createSkill(input: CreateSkillInput): Promise<Skill> {
     const normalizedName = input.name.trim();
 
@@ -33,6 +37,44 @@ export class SkillService {
 
     await this.em.persistAndFlush(skill);
     return skill;
+  }
+
+  async updateSkill(
+    skillId: number,
+    data: { name?: string; category?: string; isActive?: boolean },
+  ): Promise<Skill> {
+    const skill = await this.findSkillById(skillId);
+    if (!skill) {
+      throw new NotFoundException("Không tìm thấy skill!");
+    }
+
+    if (data.name) {
+      const normalizedName = data.name.trim();
+      const existing = await this.em.findOne(Skill, { name: normalizedName });
+      if (existing && existing.skillId !== skillId) {
+        throw new ConflictException("Skill này đã tồn tại trong hệ thống!");
+      }
+      skill.name = normalizedName;
+    }
+
+    if (data.category !== undefined) {
+      skill.category = data.category;
+    }
+
+    if (data.isActive !== undefined) {
+      skill.isActive = data.isActive;
+    }
+
+    await this.em.persistAndFlush(skill);
+    return skill;
+  }
+
+  async deleteSkill(skillId: number): Promise<boolean> {
+    const skill = await this.findSkillById(skillId);
+    if (!skill) return false;
+
+    await this.em.removeAndFlush(skill);
+    return true;
   }
 
   async addSkillsToJob(jobId: number, skillIds: number[]): Promise<Job> {

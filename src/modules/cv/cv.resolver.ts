@@ -1,5 +1,5 @@
 import { UseGuards } from "@nestjs/common";
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Query, Resolver, Int } from "@nestjs/graphql";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
@@ -10,6 +10,21 @@ import { PresignedUploadResponse } from "./type/presigned-upload.response";
 @Resolver(() => Cv)
 export class CvResolver {
   constructor(private readonly cvService: CvService) {}
+
+  @Query(() => [Cv])
+  @UseGuards(GqlAuthGuard)
+  async userCvs(@CurrentUser() user: User): Promise<Cv[]> {
+    return this.cvService.getUserCvs(user.userId);
+  }
+
+  @Query(() => Cv, { nullable: true })
+  @UseGuards(GqlAuthGuard)
+  async getCv(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @CurrentUser() user: User,
+  ): Promise<Cv | null> {
+    return this.cvService.getCvById(cvId, user.userId);
+  }
 
   @Mutation(() => PresignedUploadResponse)
   @UseGuards(GqlAuthGuard)
@@ -31,5 +46,14 @@ export class CvResolver {
       fileName,
       fileKey,
     });
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard)
+  async deleteCv(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return this.cvService.deleteCv(cvId, user.userId);
   }
 }

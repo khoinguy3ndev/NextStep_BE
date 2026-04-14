@@ -111,4 +111,28 @@ export class CvService {
     }
     return endpoint.replace(/\/$/, "");
   }
+
+  async getUserCvs(userId: number): Promise<Cv[]> {
+    return this.em.find(
+      Cv,
+      { user: { userId } },
+      { orderBy: { uploadedAt: "DESC" } },
+    );
+  }
+
+  async getCvById(cvId: number, userId: number): Promise<Cv | null> {
+    return this.em.findOne(
+      Cv,
+      { cvId, user: { userId } },
+      { populate: ["user"] },
+    );
+  }
+
+  async deleteCv(cvId: number, userId: number): Promise<boolean> {
+    const cv = await this.getCvById(cvId, userId);
+    if (!cv) return false;
+
+    await this.em.removeAndFlush(cv);
+    return true;
+  }
 }
