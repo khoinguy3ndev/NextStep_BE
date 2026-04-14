@@ -10,6 +10,12 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => User, { nullable: true })
+  @UseGuards(GqlAuthGuard)
+  async me(@CurrentUser() user: User): Promise<User | null> {
+    return this.userService.findById(user.userId);
+  }
+
+  @Query(() => User, { nullable: true })
   async getUserById(@Args("userId") userId: number): Promise<User | null> {
     return this.userService.findById(userId);
   }
