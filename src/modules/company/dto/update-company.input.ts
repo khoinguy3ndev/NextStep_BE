@@ -5,6 +5,6 @@ import { IsInt } from "class-validator";
 @InputType()
 export class UpdateCompanyInput extends PartialType(CreateCompanyInput) {
   @Field(() => Int)
-  @IsInt({ message: "companyId phải là số nguyên" })
+  @IsInt({ message: "companyId must be an integer" })
   companyId!: number;
 }

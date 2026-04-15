@@ -7,11 +7,11 @@ import { IsEnum, IsInt, IsOptional } from "class-validator";
 @InputType()
 export class UpdateJobInput extends PartialType(CreateJobInput) {
   @Field(() => Int)
-  @IsInt({ message: "jobId phải là số nguyên" })
+  @IsInt({ message: "jobId must be an integer" })
   jobId!: number;
 
   @Field(() => JobStatus, { nullable: true })
   @IsOptional()
-  @IsEnum(JobStatus, { message: "status không hợp lệ" })
+  @IsEnum(JobStatus, { message: "status is invalid" })
   status?: JobStatus;
 }

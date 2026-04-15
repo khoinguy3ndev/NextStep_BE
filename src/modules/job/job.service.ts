@@ -67,7 +67,7 @@ export class JobService {
     // Kiểm tra xem Company có tồn tại không
     const company = await this.em.findOne(Company, { companyId: companyId });
     if (!company) {
-      throw new NotFoundException("Không tìm thấy công ty này!");
+      throw new NotFoundException("Company not found");
     }
 
     // Ensure required fields are present
@@ -87,13 +87,13 @@ export class JobService {
 
     const job = await this.findById(jobId);
     if (!job) {
-      throw new NotFoundException("Không tìm thấy Job!");
+      throw new NotFoundException("Job not found");
     }
 
     // Nếu có cập nhật công ty mới
     if (companyId) {
       const company = await this.em.findOne(Company, { companyId: companyId });
-      if (!company) throw new NotFoundException("Không tìm thấy công ty này!");
+      if (!company) throw new NotFoundException("Company not found");
       job.company = company;
     }
 

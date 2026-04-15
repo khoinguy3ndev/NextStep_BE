@@ -20,20 +20,6 @@ export class UserResolver {
     return this.userService.findById(userId);
   }
 
-  @Query(() => User, { nullable: true })
-  async user(@Args("userId") userId: number): Promise<User | null> {
-    return this.userService.findById(userId);
-  }
-
-  @Mutation(() => User)
-  async createUser(
-    @Args("email") email: string,
-    @Args("password") password: string,
-    @Args("name") name: string,
-  ): Promise<User> {
-    return this.userService.createUser(email, password, name);
-  }
-
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard)
   async updateUserProfile(
