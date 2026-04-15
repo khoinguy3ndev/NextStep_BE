@@ -75,21 +75,4 @@ describe('UserService', () => {
     });
   });
 
-  describe('createUser', () => {
-    it('should create and return a new user', async () => {
-      const email = 'new@example.com';
-      const password = 'password123';
-      const name = 'New User';
-
-      mockEm.persistAndFlush.mockResolvedValue(undefined);
-
-      const result = await service.createUser(email, password, name);
-
-      expect(result).toBeInstanceOf(User);
-      expect(result.email).toBe(email);
-      expect(result.password).toBe(password);
-      expect(result.name).toBe(name);
-      expect(mockEm.persistAndFlush).toHaveBeenCalledWith(result);
-    });
-  });
 });

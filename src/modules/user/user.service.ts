@@ -14,21 +14,6 @@ export class UserService {
     return this.em.findOne(User, { email });
   }
 
-  async createUser(
-    email: string,
-    password: string | null,
-    name: string,
-  ): Promise<User> {
-    const user = new User();
-    user.email = email;
-    if (password) {
-      user.password = password;
-    }
-    user.name = name;
-    await this.em.persistAndFlush(user);
-    return user;
-  }
-
   async findOrCreateGoogleUser(params: {
     email: string;
     name: string;
@@ -61,7 +46,7 @@ export class UserService {
   ): Promise<User> {
     const user = await this.findById(userId);
     if (!user) {
-      throw new NotFoundException("Không tìm thấy người dùng!");
+      throw new NotFoundException("User not found");
     }
 
     if (data.name) {

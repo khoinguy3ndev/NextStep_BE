@@ -26,7 +26,7 @@ export class CompanyService {
       name: input.name,
     });
     if (existingCompany) {
-      throw new ConflictException("Tên công ty này đã tồn tại trong hệ thống!");
+      throw new ConflictException("This company name already exists in the system");
     }
 
     const { companyId, ...data } = input as any;
@@ -40,7 +40,7 @@ export class CompanyService {
 
     const company = await this.findById(companyId);
     if (!company) {
-      throw new NotFoundException("Không tìm thấy công ty!");
+      throw new NotFoundException("Company not found");
     }
 
     // Nếu có đổi tên công ty, phải kiểm tra xem tên mới có bị trùng với công ty khác không
@@ -50,7 +50,7 @@ export class CompanyService {
       });
       if (existingCompany) {
         throw new ConflictException(
-          "Tên công ty này đã tồn tại trong hệ thống!",
+          "This company name already exists in the system",
         );
       }
     }

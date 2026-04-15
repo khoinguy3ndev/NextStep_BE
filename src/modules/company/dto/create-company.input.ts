@@ -4,8 +4,8 @@ import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 @InputType()
 export class CreateCompanyInput {
   @Field()
-  @IsString({ message: "Tên công ty phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "Tên công ty không được để trống" })
+  @IsString({ message: "Company name must be a string" })
+  @IsNotEmpty({ message: "Company name must not be empty" })
   name!: string;
 
   @Field({ nullable: true })

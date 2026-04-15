@@ -15,58 +15,58 @@ import {
 @InputType()
 export class CreateJobInput {
   @Field(() => Int)
-  @IsInt({ message: "companyId phải là số nguyên" })
+  @IsInt({ message: "companyId must be an integer" })
   companyId!: number; // Gửi ID của Company lên thay vì cả object
 
   @Field()
-  @IsString({ message: "title phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "title không được để trống" })
+  @IsString({ message: "title must be a string" })
+  @IsNotEmpty({ message: "title must not be empty" })
   title!: string;
 
   @Field(() => JobLevel, { nullable: true })
   @IsOptional()
-  @IsEnum(JobLevel, { message: "level không hợp lệ" })
+  @IsEnum(JobLevel, { message: "level is invalid" })
   level?: JobLevel;
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsString({ message: "location phải là chuỗi ký tự" })
+  @IsString({ message: "location must be a string" })
   location?: string;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
-  @IsInt({ message: "salaryMin phải là số nguyên" })
+  @IsInt({ message: "salaryMin must be an integer" })
   salaryMin?: number;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
-  @IsInt({ message: "salaryMax phải là số nguyên" })
+  @IsInt({ message: "salaryMax must be an integer" })
   salaryMax?: number;
 
   @Field(() => Currency, { nullable: true })
   @IsOptional()
-  @IsEnum(Currency, { message: "currency không hợp lệ" })
+  @IsEnum(Currency, { message: "currency is invalid" })
   currency?: Currency;
 
   @Field()
-  @IsString({ message: "descriptionRaw phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "descriptionRaw không được để trống" })
+  @IsString({ message: "descriptionRaw must be a string" })
+  @IsNotEmpty({ message: "descriptionRaw must not be empty" })
   descriptionRaw!: string;
 
   @Field()
-  @IsString({ message: "sourceUrl phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "sourceUrl không được để trống" })
-  @IsUrl({}, { message: "sourceUrl phải là URL hợp lệ" })
+  @IsString({ message: "sourceUrl must be a string" })
+  @IsNotEmpty({ message: "sourceUrl must not be empty" })
+  @IsUrl({}, { message: "sourceUrl must be a valid URL" })
   sourceUrl!: string;
 
   @Field()
-  @IsString({ message: "sourceSite phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "sourceSite không được để trống" })
+  @IsString({ message: "sourceSite must be a string" })
+  @IsNotEmpty({ message: "sourceSite must not be empty" })
   sourceSite!: string;
 
   @Field({ nullable: true })
   @IsOptional()
   @Type(() => Date)
-  @IsDate({ message: "postedAt phải là kiểu ngày hợp lệ" })
+  @IsDate({ message: "postedAt must be a valid date" })
   postedAt?: Date;
 }

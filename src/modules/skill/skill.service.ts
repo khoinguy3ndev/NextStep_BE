@@ -27,7 +27,7 @@ export class SkillService {
 
     const existing = await this.em.findOne(Skill, { name: normalizedName });
     if (existing) {
-      throw new ConflictException("Skill này đã tồn tại trong hệ thống!");
+      throw new ConflictException("This skill already exists in the system");
     }
 
     const skill = this.em.create(Skill, {
@@ -45,14 +45,14 @@ export class SkillService {
   ): Promise<Skill> {
     const skill = await this.findSkillById(skillId);
     if (!skill) {
-      throw new NotFoundException("Không tìm thấy skill!");
+      throw new NotFoundException("Skill not found");
     }
 
     if (data.name) {
       const normalizedName = data.name.trim();
       const existing = await this.em.findOne(Skill, { name: normalizedName });
       if (existing && existing.skillId !== skillId) {
-        throw new ConflictException("Skill này đã tồn tại trong hệ thống!");
+        throw new ConflictException("This skill already exists in the system");
       }
       skill.name = normalizedName;
     }
@@ -80,7 +80,7 @@ export class SkillService {
   async addSkillsToJob(jobId: number, skillIds: number[]): Promise<Job> {
     const normalizedSkillIds = [...new Set(skillIds)];
     if (normalizedSkillIds.length === 0) {
-      throw new BadRequestException("skillIds không được để trống");
+      throw new BadRequestException("skillIds must not be empty");
     }
 
     const job = await this.em.findOne(
@@ -90,7 +90,7 @@ export class SkillService {
     );
 
     if (!job) {
-      throw new NotFoundException("Không tìm thấy Job!");
+      throw new NotFoundException("Job not found");
     }
 
     const skills = await this.em.find(Skill, {
@@ -102,7 +102,7 @@ export class SkillService {
       const missingIds = normalizedSkillIds.filter((id) => !foundIds.has(id));
 
       throw new NotFoundException(
-        `Không tìm thấy skill với id: ${missingIds.join(", ")}`,
+        `Skills not found for ids: ${missingIds.join(", ")}`,
       );
     }
 

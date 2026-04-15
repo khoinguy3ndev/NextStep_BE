@@ -4,12 +4,12 @@ import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 @InputType()
 export class CreateSkillInput {
   @Field()
-  @IsString({ message: "name phải là chuỗi ký tự" })
-  @IsNotEmpty({ message: "name không được để trống" })
+  @IsString({ message: "name must be a string" })
+  @IsNotEmpty({ message: "name must not be empty" })
   name!: string;
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsString({ message: "category phải là chuỗi ký tự" })
+  @IsString({ message: "category must be a string" })
   category?: string;
 }

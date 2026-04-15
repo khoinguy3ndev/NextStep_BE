@@ -1,4 +1,5 @@
 import { UserService } from "./../user/user.service";
+import { EntityManager } from "@mikro-orm/postgresql";
 import {
   BadRequestException,
   Injectable,
@@ -15,6 +16,7 @@ import { LoginInput } from "./dto/login.input";
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly em: EntityManager,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -26,11 +28,11 @@ export class AuthService {
       throw new BadRequestException("Email is already in use");
     }
     const hashedPassword = await bcrypt.hash(registerInput.password, 10);
-    await this.userService.createUser(
-      registerInput.email,
-      hashedPassword,
-      registerInput.name,
-    );
+    const user = new User();
+    user.email = registerInput.email;
+    user.password = hashedPassword;
+    user.name = registerInput.name;
+    await this.em.persistAndFlush(user);
     return "Registration successful";
   }
 
