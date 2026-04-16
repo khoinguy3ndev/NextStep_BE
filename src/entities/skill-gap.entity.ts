@@ -4,9 +4,9 @@ import { AnalysisResult } from './analysis-result.entity';
 import { Skill } from './skill.entity';
 
 @ObjectType()
-@Entity({ tableName: 'cv_skills' })
+@Entity({ tableName: 'skill_gaps' })
 @Unique({ properties: ['analysis', 'skill'] })
-export class CvSkill {
+export class SkillGap {
   @Field(() => ID)
   @PrimaryKey()
   id!: number;
@@ -14,14 +14,15 @@ export class CvSkill {
   @ManyToOne(() => AnalysisResult, { fieldName: 'analysis_id' })
   analysis!: AnalysisResult;
 
+  @Field(() => Skill)
   @ManyToOne(() => Skill, { fieldName: 'skill_id' })
   skill!: Skill;
 
   @Field()
-  @Property({ type: 'float' })
-  confidence!: number;
+  @Property({ type: 'float', fieldName: 'priority_score' })
+  priorityScore!: number;
 
-  @Field()
-  @Property()
-  source!: string;
+  @Field({ nullable: true })
+  @Property({ type: 'text', nullable: true, fieldName: 'gap_reason' })
+  gapReason?: string;
 }

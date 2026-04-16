@@ -11,6 +11,8 @@ import { CvSkill } from "./cv-skill.entity";
 import { Job } from "./job.entity";
 import { JobSkill } from "./job-skill.entity";
 import { RoadmapItem } from "./roadmap-item.entity";
+import { SkillCourse } from "./skill-course.entity";
+import { SkillGap } from "./skill-gap.entity";
 
 @ObjectType()
 @Entity({ tableName: "skills" })
@@ -43,6 +45,12 @@ export class Skill {
 
   @OneToMany(() => CvSkill, (cvSkill) => cvSkill.skill)
   cvSkills = new Collection<CvSkill>(this);
+
+  @OneToMany(() => SkillGap, (skillGap) => skillGap.skill)
+  skillGaps = new Collection<SkillGap>(this);
+
+  @OneToMany(() => SkillCourse, (skillCourse) => skillCourse.skill)
+  skillCourses = new Collection<SkillCourse>(this);
 
   @OneToMany(() => RoadmapItem, (item) => item.skill)
   roadmapItems = new Collection<RoadmapItem>(this);

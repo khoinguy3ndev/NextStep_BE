@@ -1,11 +1,15 @@
 import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Int } from "@nestjs/graphql";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { SkillGap } from "src/entities/skill-gap.entity";
 import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
 import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
 import { CvService } from "./cv.service";
+import { AnalysisDetailResponse } from "./type/analysis-detail.response";
+import { AnalysisHistoryResponse } from "./type/analysis-history.response";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
+import { RoadmapResourceGroupResponse } from "./type/roadmap-resource-group.response";
 
 @Resolver(() => Cv)
 export class CvResolver {
@@ -24,6 +28,34 @@ export class CvResolver {
     @CurrentUser() user: User,
   ): Promise<Cv | null> {
     return this.cvService.getCvById(cvId, user.userId);
+  }
+
+  @Query(() => AnalysisHistoryResponse)
+  async analysisHistory(
+    @Args("limit", { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<AnalysisHistoryResponse> {
+    return this.cvService.getAnalysisHistory(limit);
+  }
+
+  @Query(() => AnalysisDetailResponse, { nullable: true })
+  async analysisDetail(
+    @Args("analysisId", { type: () => Int }) analysisId: number,
+  ): Promise<AnalysisDetailResponse | null> {
+    return this.cvService.getAnalysisDetail(analysisId);
+  }
+
+  @Query(() => [SkillGap])
+  async analysisSkillGaps(
+    @Args("analysisId", { type: () => Int }) analysisId: number,
+  ): Promise<SkillGap[]> {
+    return this.cvService.getAnalysisSkillGaps(analysisId);
+  }
+
+  @Query(() => [RoadmapResourceGroupResponse])
+  async roadmapResourcesByAnalysis(
+    @Args("analysisId", { type: () => Int }) analysisId: number,
+  ): Promise<RoadmapResourceGroupResponse[]> {
+    return this.cvService.getRoadmapResourcesByAnalysis(analysisId);
   }
 
   @Mutation(() => PresignedUploadResponse)

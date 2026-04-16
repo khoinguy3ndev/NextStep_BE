@@ -1,5 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Job } from "src/entities/job.entity";
+import { SkillCourse } from "src/entities/skill-course.entity";
 import { Skill } from "src/entities/skill.entity";
 import { CreateSkillInput } from "./dto/create-skill.input";
 import { UpdateSkillInput } from "./dto/update-skill.input";
@@ -19,6 +20,20 @@ export class SkillResolver {
     @Args("skillId", { type: () => Int }) skillId: number,
   ): Promise<Skill | null> {
     return this.skillService.findSkillById(skillId);
+  }
+
+  @Query(() => [SkillCourse])
+  async skillCourses(
+    @Args("limit", { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<SkillCourse[]> {
+    return this.skillService.findAllSkillCourses(limit);
+  }
+
+  @Query(() => [SkillCourse])
+  async skillCoursesBySkill(
+    @Args("skillId", { type: () => Int }) skillId: number,
+  ): Promise<SkillCourse[]> {
+    return this.skillService.findSkillCoursesBySkillId(skillId);
   }
 
   @Mutation(() => Skill)

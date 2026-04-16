@@ -1,37 +1,50 @@
-import {
-  Entity,
-  OneToOne,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { AnalysisRequest } from './analysis-request.entity';
+import { CvSkill } from './cv-skill.entity';
+import { Job } from './job.entity';
+import { SkillGap } from './skill-gap.entity';
 
 @ObjectType()
-@Entity({ tableName: 'analysis_results' })
+@Entity({ tableName: 'cv_analysis_results' })
 export class AnalysisResult {
   @Field(() => ID)
-  @PrimaryKey()
-  resultId!: number;
+  @PrimaryKey({ fieldName: 'analysis_id' })
+  analysisId!: number;
 
-  @OneToOne(() => AnalysisRequest, { owner: true })
-  request!: AnalysisRequest;
+  @Field(() => Job)
+  @ManyToOne(() => Job, { fieldName: 'job_job_id' })
+  job!: Job;
 
   @Field({ nullable: true })
-  @Property({ type: 'text', nullable: true })
-  summary?: string;
+  @Property({ nullable: true, fieldName: 'cv_filename' })
+  cvFilename?: string;
 
-  @Property({ type: 'json', nullable: true })
+  @Field({ nullable: true })
+  @Property({ type: 'text', nullable: true, fieldName: 'cv_text_excerpt' })
+  cvTextExcerpt?: string;
+
+  @Property({ type: 'json', fieldName: 'extracted_profile_json' })
+  extractedProfileJson!: Record<string, unknown>;
+
+  @Property({ type: 'json', fieldName: 'job_context_json' })
+  jobContextJson!: Record<string, unknown>;
+
+  @Property({ type: 'json', fieldName: 'job_match_json' })
+  jobMatchJson!: Record<string, unknown>;
+
+  @Property({ type: 'json', fieldName: 'gap_analysis_json' })
   gapAnalysisJson?: Record<string, unknown>;
 
-  @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
-  recommendedSkills: string[] = [];
-
-  @Property({ type: 'json', nullable: true })
+  @Property({ type: 'json', fieldName: 'roadmap_json' })
   roadmapJson?: Record<string, unknown>;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: 'created_at' })
   createdAt!: Date;
+
+  @OneToMany(() => CvSkill, (cvSkill) => cvSkill.analysis)
+  cvSkills = new Collection<CvSkill>(this);
+
+  @OneToMany(() => SkillGap, (skillGap) => skillGap.analysis)
+  skillGaps = new Collection<SkillGap>(this);
 }

@@ -9,9 +9,16 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { basename } from "path";
 import { randomUUID } from "crypto";
+import { AnalysisResult } from "src/entities/analysis-result.entity";
 import { Cv } from "src/entities/cv.entity";
+import { SkillCourse } from "src/entities/skill-course.entity";
+import { SkillGap } from "src/entities/skill-gap.entity";
 import { User } from "src/entities/user.entity";
+import { AnalysisDetailResponse } from "./type/analysis-detail.response";
+import { AnalysisHistoryItemResponse } from "./type/analysis-history-item.response";
+import { AnalysisHistoryResponse } from "./type/analysis-history.response";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
+import { RoadmapResourceGroupResponse } from "./type/roadmap-resource-group.response";
 
 @Injectable()
 export class CvService {
@@ -134,5 +141,151 @@ export class CvService {
 
     await this.em.removeAndFlush(cv);
     return true;
+  }
+
+  async getAnalysisHistory(limit = 20): Promise<AnalysisHistoryResponse> {
+    const normalizedLimit = Math.max(1, Math.min(limit, 100));
+    const rows = await this.em.find(
+      AnalysisResult,
+      {},
+      {
+        populate: ["job"],
+        orderBy: { createdAt: "DESC", analysisId: "DESC" },
+        limit: normalizedLimit,
+      },
+    );
+
+    const items: AnalysisHistoryItemResponse[] = rows.map((row) => {
+      const jobMatch = this.asObject(row.jobMatchJson);
+      const roadmap = this.asObject(row.roadmapJson);
+
+      return {
+        analysisId: row.analysisId,
+        jobId: row.job.jobId,
+        jobTitle: row.job.title,
+        cvFilename: row.cvFilename,
+        createdAt: row.createdAt,
+        jobMatchScore: this.toOptionalInt(jobMatch.score),
+        roadmapTotalWeeks: this.toOptionalInt(roadmap.total_weeks),
+      };
+    });
+
+    return {
+      totalCount: items.length,
+      items,
+    };
+  }
+
+  async getAnalysisDetail(
+    analysisId: number,
+  ): Promise<AnalysisDetailResponse | null> {
+    const row = await this.em.findOne(
+      AnalysisResult,
+      { analysisId },
+      {
+        populate: ["job", "skillGaps", "skillGaps.skill"],
+      },
+    );
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      analysisId: row.analysisId,
+      jobId: row.job.jobId,
+      jobTitle: row.job.title,
+      cvFilename: row.cvFilename,
+      cvTextExcerpt: row.cvTextExcerpt,
+      createdAt: row.createdAt,
+      extractedProfileJson: this.stringifyJson(row.extractedProfileJson),
+      jobContextJson: this.stringifyJson(row.jobContextJson),
+      jobMatchJson: this.stringifyJson(row.jobMatchJson),
+      gapAnalysisJson: this.stringifyJson(row.gapAnalysisJson),
+      roadmapJson: this.stringifyJson(row.roadmapJson),
+      skillGaps: row.skillGaps.getItems(),
+    };
+  }
+
+  async getAnalysisSkillGaps(analysisId: number): Promise<SkillGap[]> {
+    return this.em.find(
+      SkillGap,
+      { analysis: { analysisId } },
+      {
+        populate: ["skill"],
+        orderBy: { priorityScore: "DESC", id: "ASC" },
+      },
+    );
+  }
+
+  async getRoadmapResourcesByAnalysis(
+    analysisId: number,
+  ): Promise<RoadmapResourceGroupResponse[]> {
+    const skillGaps = await this.em.find(
+      SkillGap,
+      { analysis: { analysisId } },
+      {
+        populate: ["skill"],
+        orderBy: { priorityScore: "DESC", id: "ASC" },
+      },
+    );
+
+    if (skillGaps.length === 0) {
+      return [];
+    }
+
+    const skillIds = [...new Set(skillGaps.map((item) => item.skill.skillId))];
+    const courses = await this.em.find(
+      SkillCourse,
+      { skill: { skillId: { $in: skillIds } } },
+      {
+        populate: ["skill"],
+        orderBy: { durationHours: "DESC", id: "ASC" },
+      },
+    );
+
+    const courseMap = new Map<number, SkillCourse[]>();
+    for (const course of courses) {
+      const skillId = course.skill.skillId;
+      const bucket = courseMap.get(skillId) ?? [];
+      if (bucket.length < 3) {
+        bucket.push(course);
+      }
+      courseMap.set(skillId, bucket);
+    }
+
+    return skillGaps.map((gap) => ({
+      skillId: gap.skill.skillId,
+      skillName: gap.skill.name,
+      priorityScore: gap.priorityScore,
+      gapReason: gap.gapReason,
+      resources: (courseMap.get(gap.skill.skillId) ?? []).map((course) => ({
+        id: course.id,
+        title: course.title,
+        platform: course.platform,
+        url: course.url,
+        duration: course.duration,
+        durationHours: course.durationHours,
+        level: course.level,
+      })),
+    }));
+  }
+
+  private stringifyJson(value: unknown): string {
+    return JSON.stringify(value ?? {});
+  }
+
+  private asObject(value: unknown): Record<string, unknown> {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as Record<string, unknown>;
+    }
+    return {};
+  }
+
+  private toOptionalInt(value: unknown): number | undefined {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return Math.round(value);
+    }
+    return undefined;
   }
 }

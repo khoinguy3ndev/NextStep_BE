@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Job } from "src/entities/job.entity";
+import { SkillCourse } from "src/entities/skill-course.entity";
 import { JobSkill } from "src/entities/job-skill.entity";
 import { Skill } from "src/entities/skill.entity";
 import { CreateSkillInput } from "./dto/create-skill.input";
@@ -20,6 +21,35 @@ export class SkillService {
 
   async findSkillById(skillId: number): Promise<Skill | null> {
     return this.em.findOne(Skill, { skillId });
+  }
+
+  async findAllSkillCourses(limit = 100): Promise<SkillCourse[]> {
+    const normalizedLimit = Math.max(1, Math.min(limit, 200));
+    return this.em.find(
+      SkillCourse,
+      {},
+      {
+        populate: ["skill"],
+        orderBy: { durationHours: "DESC", id: "ASC" },
+        limit: normalizedLimit,
+      },
+    );
+  }
+
+  async findSkillCoursesBySkillId(skillId: number): Promise<SkillCourse[]> {
+    const skill = await this.findSkillById(skillId);
+    if (!skill) {
+      throw new NotFoundException("KhÃ´ng tÃ¬m tháº¥y skill!");
+    }
+
+    return this.em.find(
+      SkillCourse,
+      { skill: { skillId } },
+      {
+        populate: ["skill"],
+        orderBy: { durationHours: "DESC", id: "ASC" },
+      },
+    );
   }
 
   async createSkill(input: CreateSkillInput): Promise<Skill> {

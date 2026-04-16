@@ -1,13 +1,30 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Module } from "@nestjs/common";
+import { AnalysisResult } from "src/entities/analysis-result.entity";
 import { Cv } from "src/entities/cv.entity";
+import { CvSkill } from "src/entities/cv-skill.entity";
+import { Job } from "src/entities/job.entity";
+import { Skill } from "src/entities/skill.entity";
+import { SkillCourse } from "src/entities/skill-course.entity";
+import { SkillGap } from "src/entities/skill-gap.entity";
 import { AuthModule } from "src/modules/auth/auth.module";
 import { CvResolver } from "./cv.resolver";
 import { CvService } from "./cv.service";
 
 @Module({
-  imports: [AuthModule, MikroOrmModule.forFeature([Cv])],
+  imports: [
+    AuthModule,
+    MikroOrmModule.forFeature([
+      Cv,
+      AnalysisResult,
+      CvSkill,
+      SkillGap,
+      SkillCourse,
+      Job,
+      Skill,
+    ]),
+  ],
   providers: [
     {
       provide: S3Client,
