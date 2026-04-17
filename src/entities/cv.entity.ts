@@ -10,29 +10,29 @@ import { User } from "./user.entity";
 
 @ObjectType()
 @Entity({ tableName: "cvs" })
+@Unique({ properties: ["fileKey"] })
 export class Cv {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: "cv_id" })
   cvId!: number;
 
   @Field(() => User)
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { fieldName: "user_user_id" })
   user!: User;
 
   @Field()
-  @Property()
+  @Property({ fieldName: "file_name" })
   fileName!: string;
 
   @Field()
-  @Property({ type: "text", unique: true })
-  @Unique()
+  @Property({ fieldName: "file_key", type: "text" })
   fileKey!: string;
 
   @Field()
-  @Property({ type: "text" })
+  @Property({ fieldName: "file_url", type: "text" })
   fileUrl!: string;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: "uploaded_at" })
   uploadedAt!: Date;
 }

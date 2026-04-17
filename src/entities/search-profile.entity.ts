@@ -14,37 +14,47 @@ import { User } from './user.entity';
 @Entity({ tableName: 'search_profiles' })
 export class SearchProfile {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'profile_id' })
   profileId!: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { fieldName: 'user_user_id' })
   user!: User;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: 'int' })
+  @Property({ fieldName: 'desired_salary_min', nullable: true, type: 'int' })
   desiredSalaryMin?: number;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: 'int' })
+  @Property({ fieldName: 'desired_salary_max', nullable: true, type: 'int' })
   desiredSalaryMax?: number;
 
   @Field(() => Currency, { nullable: true })
-  @Enum({ items: () => Currency, nativeEnumName: 'currency', nullable: true })
+  @Enum({
+    items: () => Currency,
+    nativeEnumName: 'currency',
+    fieldName: 'currency',
+    nullable: true,
+  })
   currency?: Currency;
 
   @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
+  @Property({ fieldName: 'locations', type: 'text[]' })
   locations: string[] = [];
 
   @Field(() => [JobLevel], { nullable: true })
-  @Enum({ items: () => JobLevel, nativeEnumName: 'job_level', array: true, default: [] })
+  @Enum({
+    items: () => JobLevel,
+    nativeEnumName: 'job_level',
+    fieldName: 'target_levels',
+    array: true,
+  })
   targetLevels: JobLevel[] = [];
 
   @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
+  @Property({ fieldName: 'target_titles', type: 'text[]' })
   targetTitles: string[] = [];
 
   @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
+  @Property({ fieldName: 'industries', type: 'text[]' })
   industries: string[] = [];
 }

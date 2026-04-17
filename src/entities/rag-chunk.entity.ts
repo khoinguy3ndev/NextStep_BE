@@ -11,28 +11,28 @@ import { RagDocument } from './rag-document.entity';
 @Entity({ tableName: 'rag_chunks' })
 export class RagChunk {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'chunk_id' })
   chunkId!: number;
 
-  @ManyToOne(() => RagDocument)
+  @ManyToOne(() => RagDocument, { fieldName: 'doc_doc_id' })
   doc!: RagDocument;
 
   @Field()
-  @Property({ type: 'text' })
+  @Property({ fieldName: 'content', type: 'text' })
   content!: string;
 
   @Field()
-  @Property({ type: 'int' })
+  @Property({ fieldName: 'token_count', type: 'int' })
   tokenCount!: number;
 
-  @Property({ type: 'vector', length: 1536 })
+  @Property({ fieldName: 'embedding', type: 'vector', length: 1536 })
   embedding!: number[];
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'embedding_model' })
   embeddingModel!: string;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: 'created_at' })
   createdAt!: Date;
 }

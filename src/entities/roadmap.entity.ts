@@ -17,29 +17,34 @@ import { User } from './user.entity';
 @Entity({ tableName: 'roadmaps' })
 export class Roadmap {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'roadmap_id' })
   roadmapId!: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { fieldName: 'user_user_id' })
   user!: User;
 
-  @ManyToOne(() => Job, { nullable: true })
+  @ManyToOne(() => Job, { fieldName: 'target_job_job_id', nullable: true })
   targetJob?: Job;
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'goal_title' })
   goalTitle!: string;
 
   @Field()
-  @Property({ type: 'int' })
+  @Property({ fieldName: 'timeframe_weeks', type: 'int' })
   timeframeWeeks!: number;
 
   @Field(() => RoadmapStatus)
-  @Enum({ items: () => RoadmapStatus, nativeEnumName: 'roadmap_status', default: RoadmapStatus.DRAFT })
+  @Enum({
+    items: () => RoadmapStatus,
+    nativeEnumName: 'roadmap_status',
+    fieldName: 'status',
+    default: RoadmapStatus.DRAFT,
+  })
   status: RoadmapStatus = RoadmapStatus.DRAFT;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: 'created_at' })
   createdAt!: Date;
 
   @OneToMany(() => RoadmapItem, (item) => item.roadmap)

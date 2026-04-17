@@ -12,76 +12,89 @@ import {
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { Company } from "./company.entity";
 import { Currency } from "./currency.enum";
+import { CvAnalysisResult } from "./cv-analysis-result.entity";
 import { JobLevel } from "./job-level.enum";
-import { JobStatus } from "./job-status.enum";
 import { JobRequirement } from "./job-requirement.entity";
 import { JobSkill } from "./job-skill.entity";
+import { JobStatus } from "./job-status.enum";
+import { Roadmap } from "./roadmap.entity";
 import { Skill } from "./skill.entity";
 
 @ObjectType()
 @Entity({ tableName: "jobs" })
+@Unique({ properties: ["sourceUrl"] })
 export class Job {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: "job_id" })
   jobId!: number;
 
   @Field(() => Company)
-  @ManyToOne(() => Company)
+  @ManyToOne(() => Company, { fieldName: "company_company_id" })
   company!: Company;
 
   @Field()
-  @Property()
+  @Property({ fieldName: "title" })
   title!: string;
 
   @Field(() => JobLevel, { nullable: true })
-  @Enum({ items: () => JobLevel, nativeEnumName: "job_level", nullable: true })
+  @Enum({
+    items: () => JobLevel,
+    nativeEnumName: "job_level",
+    fieldName: "level",
+    nullable: true,
+  })
   level?: JobLevel;
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: "location", nullable: true })
   location?: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: "int" })
+  @Property({ fieldName: "salary_min", type: "int", nullable: true })
   salaryMin?: number;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: "int" })
+  @Property({ fieldName: "salary_max", type: "int", nullable: true })
   salaryMax?: number;
 
   @Field(() => Currency, { nullable: true })
-  @Enum({ items: () => Currency, nativeEnumName: "currency", nullable: true })
+  @Enum({
+    items: () => Currency,
+    nativeEnumName: "currency",
+    fieldName: "currency",
+    nullable: true,
+  })
   currency?: Currency;
 
   @Field()
-  @Property({ type: "text" })
+  @Property({ fieldName: "description_raw", type: "text" })
   descriptionRaw!: string;
 
   @Field({ nullable: true })
-  @Property({ type: "text", nullable: true })
+  @Property({ fieldName: "description_clean", type: "text", nullable: true })
   descriptionClean?: string;
 
   @Field()
-  @Property()
-  @Unique()
+  @Property({ fieldName: "source_url" })
   sourceUrl!: string;
 
   @Field()
-  @Property()
+  @Property({ fieldName: "source_site" })
   sourceSite!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: "posted_at", nullable: true })
   postedAt?: Date;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: "scraped_at" })
   scrapedAt!: Date;
 
   @Field(() => JobStatus)
   @Enum({
     items: () => JobStatus,
     nativeEnumName: "job_status",
+    fieldName: "status",
     default: JobStatus.ACTIVE,
   })
   status: JobStatus = JobStatus.ACTIVE;
@@ -93,7 +106,7 @@ export class Job {
   @ManyToMany({
     entity: () => Skill,
     inversedBy: "jobs",
-    pivotTable: "job_skills",
+    pivotEntity: () => JobSkill,
     joinColumn: "job_job_id",
     inverseJoinColumn: "skill_skill_id",
   })
@@ -101,4 +114,10 @@ export class Job {
 
   @OneToMany(() => JobRequirement, (requirement) => requirement.job)
   requirements = new Collection<JobRequirement>(this);
+
+  @OneToMany(() => CvAnalysisResult, (analysis) => analysis.job)
+  analysisResults = new Collection<CvAnalysisResult>(this);
+
+  @OneToMany(() => Roadmap, (roadmap) => roadmap.targetJob)
+  targetRoadmaps = new Collection<Roadmap>(this);
 }

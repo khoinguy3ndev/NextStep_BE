@@ -15,29 +15,32 @@ import { EmbeddingEntityType } from './embedding-entity-type.enum';
 @Unique({ properties: ['entityType', 'entityId', 'embeddingModel'] })
 export class EntityEmbedding {
   @Field(() => ID)
-  @PrimaryKey()
-  embeddingId!: number;
+  @PrimaryKey({ fieldName: 'embedding_id', type: 'bigint' })
+  embeddingId!: bigint;
 
   @Field(() => EmbeddingEntityType)
-  @Enum({ items: () => EmbeddingEntityType, nativeEnumName: 'embedding_entity_type' })
+  @Enum({
+    items: () => EmbeddingEntityType,
+    nativeEnumName: 'embedding_entity_type',
+    fieldName: 'entity_type',
+  })
   entityType!: EmbeddingEntityType;
 
-  @Field(() => Int)
-  @Property({ type: 'int' })
-  entityId!: number;
+  @Property({ fieldName: 'entity_id', type: 'bigint' })
+  entityId!: bigint;
 
-  @Property({ type: 'vector', length: 1536 })
+  @Property({ fieldName: 'embedding', type: 'vector', length: 1536 })
   embedding!: number[];
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'embedding_model' })
   embeddingModel!: string;
 
   @Field(() => Int)
-  @Property({ type: 'int', default: 1536 })
+  @Property({ fieldName: 'embedding_dimension', type: 'int', default: 1536 })
   embeddingDimension: number = 1536;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: 'created_at' })
   createdAt!: Date;
 }

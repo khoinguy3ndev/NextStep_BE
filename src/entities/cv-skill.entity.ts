@@ -3,35 +3,24 @@ import {
   ManyToOne,
   PrimaryKey,
   Property,
-  Unique,
 } from '@mikro-orm/core';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { CvDocument } from './cv-document.entity';
+import { CvAnalysisResult } from './cv-analysis-result.entity';
 import { Skill } from './skill.entity';
 
-@ObjectType()
 @Entity({ tableName: 'cv_skills' })
-@Unique({ properties: ['cv', 'skill'] })
 export class CvSkill {
-  @Field(() => ID)
-  @PrimaryKey()
-  cvSkillId!: number;
+  @PrimaryKey({ fieldName: 'id' })
+  id!: number;
 
-  @ManyToOne(() => CvDocument)
-  cv!: CvDocument;
+  @ManyToOne(() => CvAnalysisResult, { fieldName: 'analysis_id' })
+  analysis!: CvAnalysisResult;
 
-  @ManyToOne(() => Skill)
+  @ManyToOne(() => Skill, { fieldName: 'skill_id' })
   skill!: Skill;
 
-  @Field()
-  @Property({ type: 'float' })
-  proficiency!: number;
+  @Property({ fieldName: 'confidence', type: 'float', default: 0.5 })
+  confidence: number = 0.5;
 
-  @Field({ nullable: true })
-  @Property({ type: 'float', nullable: true })
-  yearsExp?: number;
-
-  @Field({ nullable: true })
-  @Property({ type: 'text', nullable: true })
-  evidenceSnippet?: string;
+  @Property({ fieldName: 'source', nullable: true })
+  source?: string;
 }

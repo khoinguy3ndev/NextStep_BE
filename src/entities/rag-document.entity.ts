@@ -14,30 +14,34 @@ import { RagDocumentType } from './rag-document-type.enum';
 @Entity({ tableName: 'rag_documents' })
 export class RagDocument {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'doc_id' })
   docId!: number;
 
   @Field(() => RagDocumentType)
-  @Enum({ items: () => RagDocumentType, nativeEnumName: 'rag_document_type' })
+  @Enum({
+    items: () => RagDocumentType,
+    nativeEnumName: 'rag_document_type',
+    fieldName: 'type',
+  })
   type!: RagDocumentType;
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'title' })
   title!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: 'source_url', nullable: true })
   sourceUrl?: string;
 
-  @Property({ type: 'text' })
+  @Property({ fieldName: 'content', type: 'text' })
   content!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: 'language', nullable: true })
   language?: string;
 
   @Field()
-  @Property({ onCreate: () => new Date() })
+  @Property({ fieldName: 'created_at' })
   createdAt!: Date;
 
   @OneToMany(() => RagChunk, (chunk) => chunk.doc)
