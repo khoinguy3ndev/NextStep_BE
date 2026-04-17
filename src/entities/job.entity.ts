@@ -17,7 +17,6 @@ import { JobLevel } from "./job-level.enum";
 import { JobRequirement } from "./job-requirement.entity";
 import { JobSkill } from "./job-skill.entity";
 import { JobStatus } from "./job-status.enum";
-import { RemoteOption } from "src/modules/job/dto/remote-option.enum";
 import { Roadmap } from "./roadmap.entity";
 import { Skill } from "./skill.entity";
 
@@ -98,15 +97,6 @@ export class Job {
   @Field({ nullable: true })
   @Property({ fieldName: "application_deadline", nullable: true })
   applicationDeadline?: Date;
-
-  @Field(() => RemoteOption, { nullable: true })
-  @Enum({
-    items: () => RemoteOption,
-    nativeEnumName: "remote_option",
-    fieldName: "remote_option",
-    nullable: true,
-  })
-  remoteOption?: RemoteOption;
 
   @Field()
   @Property({ fieldName: "source_url" })

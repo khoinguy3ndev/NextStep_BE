@@ -2,7 +2,6 @@ import { Field, InputType, Int } from "@nestjs/graphql";
 import { JobLevel } from "src/entities/job-level.enum";
 import { Currency } from "src/entities/currency.enum";
 import { Type } from "class-transformer";
-import { RemoteOption } from "./remote-option.enum";
 import {
   IsDate,
   IsEnum,
@@ -84,11 +83,6 @@ export class CreateJobInput {
   @Type(() => Date)
   @IsDate({ message: "applicationDeadline must be a valid date" })
   applicationDeadline?: Date;
-
-  @Field(() => RemoteOption, { nullable: true })
-  @IsOptional()
-  @IsEnum(RemoteOption, { message: "remoteOption is invalid" })
-  remoteOption?: RemoteOption;
 
   @Field()
   @IsString({ message: "sourceUrl must be a string" })
