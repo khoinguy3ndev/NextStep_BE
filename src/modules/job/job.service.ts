@@ -8,14 +8,42 @@ import { GetJobsArgs } from "./dto/get-jobs.args";
 import { JobPagination } from "./dto/job-pagination.output";
 import { Company } from "src/entities/company.entity";
 import { JobStatus } from "src/entities/job-status.enum";
+import { JobSort } from "./dto/job-sort.enum";
+import { JobDateRange } from "./dto/job-date-range.enum";
+
+function getExperienceRangeBounds(range?: string) {
+  switch (range) {
+    case "UNDER_1":
+      return { min: 0, max: 1 };
+    case "Y1_2":
+      return { min: 1, max: 3 };
+    case "Y3_5":
+      return { min: 3, max: 6 };
+    case "Y5_PLUS":
+      return { min: 5, max: null };
+    default:
+      return null;
+  }
+}
 
 @Injectable()
 export class JobService {
   constructor(private readonly em: EntityManager) {}
 
   async findAll(args: GetJobsArgs): Promise<JobPagination> {
-    const { search, location, level, minSalary, maxSalary, limit, offset } =
-      args;
+    const {
+      search,
+      location,
+      level,
+      minSalary,
+      maxSalary,
+      limit,
+      offset,
+      sortBy,
+      dateRange,
+      employmentType,
+      experienceRange,
+    } = args;
 
     const qb = this.em
       .createQueryBuilder(Job, "j")
@@ -46,8 +74,53 @@ export class JobService {
       qb.andWhere({ salaryMin: { $lte: maxSalary } });
     }
 
+    if (dateRange !== JobDateRange.ANY) {
+      const days = dateRange === JobDateRange.D3 ? 3 : dateRange === JobDateRange.D7 ? 7 : 30;
+      const threshold = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+      qb.andWhere({
+        $or: [
+          { postedAt: { $gte: threshold } },
+          { postedAt: null, scrapedAt: { $gte: threshold } },
+        ],
+      });
+    }
+
+    if (employmentType) {
+      qb.andWhere({ employmentType: { $ilike: `%${employmentType}%` } });
+    }
+
+    const experienceBounds = getExperienceRangeBounds(experienceRange);
+
+    if (experienceBounds) {
+      const normalizedExperienceSql = `trim(regexp_replace(coalesce(j.experience, ''), '[^0-9]+', ' ', 'g'))`;
+      const jobExperienceMinSql =
+        `nullif(split_part(${normalizedExperienceSql}, ' ', 1), '')::numeric`;
+      const jobExperienceSecondSql =
+        `nullif(split_part(${normalizedExperienceSql}, ' ', 2), '')::numeric`;
+      const jobExperienceMaxSql = `case
+        when j.experience ~ '\\+' then null
+        else coalesce(${jobExperienceSecondSql}, ${jobExperienceMinSql})
+      end`;
+
+      if (experienceBounds.max == null) {
+        qb.andWhere(
+          `${jobExperienceMinSql} is not null and coalesce(${jobExperienceMaxSql}, ${jobExperienceMinSql}) >= ${experienceBounds.min}`,
+        );
+      } else {
+        qb.andWhere(
+          `${jobExperienceMinSql} is not null and ${jobExperienceMinSql} < ${experienceBounds.max} and coalesce(${jobExperienceMaxSql}, ${jobExperienceMinSql}) >= ${experienceBounds.min}`,
+        );
+      }
+    }
+
+    const orderBy =
+      sortBy === JobSort.DATE
+        ? { postedAt: QueryOrder.DESC, scrapedAt: QueryOrder.DESC }
+        : { scrapedAt: QueryOrder.DESC, postedAt: QueryOrder.DESC };
+
     const [items, totalCount] = await qb
-      .orderBy({ postedAt: QueryOrder.DESC })
+      .orderBy(orderBy)
       .limit(limit)
       .offset(offset)
       .getResultAndCount();

@@ -17,6 +17,7 @@ import { JobLevel } from "./job-level.enum";
 import { JobRequirement } from "./job-requirement.entity";
 import { JobSkill } from "./job-skill.entity";
 import { JobStatus } from "./job-status.enum";
+import { RemoteOption } from "src/modules/job/dto/remote-option.enum";
 import { Roadmap } from "./roadmap.entity";
 import { Skill } from "./skill.entity";
 
@@ -73,6 +74,39 @@ export class Job {
   @Field({ nullable: true })
   @Property({ fieldName: "description_clean", type: "text", nullable: true })
   descriptionClean?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "role_responsibilities", type: "text", nullable: true })
+  roleResponsibilities?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "skills_qualifications", type: "text", nullable: true })
+  skillsQualifications?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "benefits", type: "text", nullable: true })
+  benefits?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "employment_type", nullable: true })
+  employmentType?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "experience", nullable: true })
+  experience?: string;
+
+  @Field({ nullable: true })
+  @Property({ fieldName: "application_deadline", nullable: true })
+  applicationDeadline?: Date;
+
+  @Field(() => RemoteOption, { nullable: true })
+  @Enum({
+    items: () => RemoteOption,
+    nativeEnumName: "remote_option",
+    fieldName: "remote_option",
+    nullable: true,
+  })
+  remoteOption?: RemoteOption;
 
   @Field()
   @Property({ fieldName: "source_url" })
