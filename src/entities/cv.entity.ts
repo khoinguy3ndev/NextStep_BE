@@ -33,6 +33,6 @@ export class Cv {
   fileUrl!: string;
 
   @Field()
-  @Property({ fieldName: "uploaded_at" })
+  @Property({ fieldName: "uploaded_at", onCreate: () => new Date() })
   uploadedAt!: Date;
 }

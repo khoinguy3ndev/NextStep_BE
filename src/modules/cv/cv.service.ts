@@ -69,6 +69,7 @@ export class CvService {
       fileName,
       fileKey,
       fileUrl: this.buildFileUrl(fileKey),
+      uploadedAt: new Date(),
     } as any);
 
     await this.em.persistAndFlush(cv);
