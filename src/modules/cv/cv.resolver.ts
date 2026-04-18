@@ -5,6 +5,10 @@ import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
 import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
 import { CvService } from "./cv.service";
+import {
+  CvAnalysisHistoryType,
+  CvAnalysisResponseType,
+} from "./type/cv-analysis.type";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
 
 @Resolver(() => Cv)
@@ -24,6 +28,23 @@ export class CvResolver {
     @CurrentUser() user: User,
   ): Promise<Cv | null> {
     return this.cvService.getCvById(cvId, user.userId);
+  }
+
+  @Query(() => CvAnalysisHistoryType)
+  @UseGuards(GqlAuthGuard)
+  async getCvAnalysisHistory(
+    @Args("limit", { type: () => Int, nullable: true, defaultValue: 20 })
+    limit: number,
+  ): Promise<CvAnalysisHistoryType> {
+    return this.cvService.getAnalysisHistory(limit);
+  }
+
+  @Query(() => CvAnalysisResponseType)
+  @UseGuards(GqlAuthGuard)
+  async getCvAnalysisResult(
+    @Args("analysisId", { type: () => Int }) analysisId: number,
+  ): Promise<CvAnalysisResponseType> {
+    return this.cvService.getAnalysisResult(analysisId);
   }
 
   @Mutation(() => PresignedUploadResponse)
@@ -46,6 +67,16 @@ export class CvResolver {
       fileName,
       fileKey,
     });
+  }
+
+  @Mutation(() => CvAnalysisResponseType)
+  @UseGuards(GqlAuthGuard)
+  async analyzeCv(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @Args("jobId", { type: () => Int }) jobId: number,
+    @CurrentUser() user: User,
+  ): Promise<CvAnalysisResponseType> {
+    return this.cvService.analyzeCv(user.userId, cvId, jobId);
   }
 
   @Mutation(() => Boolean)
