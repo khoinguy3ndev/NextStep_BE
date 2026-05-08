@@ -1,5 +1,6 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
 
 @Injectable()
@@ -56,6 +57,22 @@ export class UserService {
       user.avatar = data.avatar;
     }
 
+    await this.em.persistAndFlush(user);
+    return user;
+  }
+
+  async setBaseCv(userId: number, cvId: number): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const cv = await this.em.findOne(Cv, { cvId, user: { userId } });
+    if (!cv) {
+      throw new NotFoundException("CV not found");
+    }
+
+    user.baseCvId = cv.cvId;
     await this.em.persistAndFlush(user);
     return user;
   }

@@ -7,7 +7,7 @@ import {
   Property,
   Unique,
 } from "@mikro-orm/core";
-import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Cv } from "./cv.entity";
 import { Role } from "./role.enum";
 import { Roadmap } from "./roadmap.entity";
@@ -52,6 +52,10 @@ export class User {
   @Field({ nullable: true })
   @Property({ fieldName: "updated_at", nullable: true })
   updatedAt?: Date;
+
+  @Field(() => Int, { nullable: true })
+  @Property({ fieldName: "base_cv_id", nullable: true })
+  baseCvId?: number | null;
 
   @OneToMany(() => Cv, (cv) => cv.user)
   cvs = new Collection<Cv>(this);

@@ -1,6 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { User } from "src/entities/user.entity";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
@@ -31,6 +31,15 @@ export class UserResolver {
       name,
       avatar,
     });
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  async setBaseCv(
+    @CurrentUser() user: User,
+    @Args("cvId", { type: () => Int }) cvId: number,
+  ): Promise<User> {
+    return this.userService.setBaseCv(user.userId, cvId);
   }
 
   @Mutation(() => Boolean)
