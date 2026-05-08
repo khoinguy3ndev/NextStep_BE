@@ -35,16 +35,18 @@ export class CvResolver {
   async getCvAnalysisHistory(
     @Args("limit", { type: () => Int, nullable: true, defaultValue: 20 })
     limit: number,
+    @CurrentUser() user: User,
   ): Promise<CvAnalysisHistoryType> {
-    return this.cvService.getAnalysisHistory(limit);
+    return this.cvService.getAnalysisHistory(user.userId, limit);
   }
 
   @Query(() => CvAnalysisResponseType)
   @UseGuards(GqlAuthGuard)
   async getCvAnalysisResult(
     @Args("analysisId", { type: () => Int }) analysisId: number,
+    @CurrentUser() user: User,
   ): Promise<CvAnalysisResponseType> {
-    return this.cvService.getAnalysisResult(analysisId);
+    return this.cvService.getAnalysisResult(user.userId, analysisId);
   }
 
   @Mutation(() => PresignedUploadResponse)

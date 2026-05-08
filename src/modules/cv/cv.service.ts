@@ -149,6 +149,8 @@ export class CvService {
       cv.fileName,
     );
     formData.append("job_id", String(jobId));
+    formData.append("user_id", String(userId));
+    formData.append("cv_id", String(cv.cvId));
 
     const payload = await this.callAi("/api/v1/cv/ingest-file", {
       method: "POST",
@@ -158,16 +160,29 @@ export class CvService {
     return this.mapAnalysisResponse(payload);
   }
 
-  async getAnalysisResult(analysisId: number): Promise<CvAnalysisResponseType> {
-    const payload = await this.callAi(`/api/v1/cv/analysis-results/${analysisId}`, {
-      method: "GET",
+  async getAnalysisResult(
+    userId: number,
+    analysisId: number,
+  ): Promise<CvAnalysisResponseType> {
+    const params = new URLSearchParams({
+      user_id: String(userId),
     });
+    const payload = await this.callAi(
+      `/api/v1/cv/analysis-results/${analysisId}?${params.toString()}`,
+      {
+        method: "GET",
+      },
+    );
 
     return this.mapAnalysisResponse(payload);
   }
 
-  async getAnalysisHistory(limit: number): Promise<CvAnalysisHistoryType> {
+  async getAnalysisHistory(
+    userId: number,
+    limit: number,
+  ): Promise<CvAnalysisHistoryType> {
     const params = new URLSearchParams({
+      user_id: String(userId),
       limit: String(Math.max(1, Math.min(limit, 100))),
     });
     const payload = await this.callAi(
@@ -183,6 +198,7 @@ export class CvService {
         const row = this.asObject(item);
         return {
           analysisId: this.asNumber(row.analysis_id),
+          cvId: this.asOptionalNumber(row.cv_id),
           jobId: this.asNumber(row.job_id),
           jobTitle: this.asString(row.job_title),
           cvFilename: this.asOptionalString(row.cv_filename),

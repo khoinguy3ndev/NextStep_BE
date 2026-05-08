@@ -332,6 +332,9 @@ export class CvAnalysisHistoryItemType {
   @Field(() => Int)
   analysisId!: number;
 
+  @Field(() => Int, { nullable: true })
+  cvId?: number | null;
+
   @Field(() => Int)
   jobId!: number;
 
