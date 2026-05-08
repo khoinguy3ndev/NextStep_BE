@@ -239,6 +239,12 @@ export class RoadmapSkillItemType {
   @Field(() => Float)
   transferBonus!: number;
 
+  @Field(() => Float, { nullable: true })
+  transferDirectionFactor?: number | null;
+
+  @Field(() => Float, { nullable: true })
+  effectiveTransferBonus?: number | null;
+
   @Field(() => Int, { nullable: true })
   adjustedHours?: number | null;
 
@@ -277,6 +283,27 @@ export class RoadmapType {
 }
 
 @ObjectType()
+export class AiCvReviewType {
+  @Field()
+  summary!: string;
+
+  @Field(() => [String])
+  strengths!: string[];
+
+  @Field(() => [String])
+  concerns!: string[];
+
+  @Field(() => [String])
+  recommendations!: string[];
+
+  @Field()
+  verdict!: string;
+
+  @Field()
+  source!: string;
+}
+
+@ObjectType()
 export class CvAnalysisResponseType {
   @Field(() => Int, { nullable: true })
   analysisResultId?: number | null;
@@ -295,6 +322,9 @@ export class CvAnalysisResponseType {
 
   @Field(() => RoadmapType)
   roadmap!: RoadmapType;
+
+  @Field(() => AiCvReviewType, { nullable: true })
+  aiReview?: AiCvReviewType | null;
 }
 
 @ObjectType()

@@ -311,6 +311,7 @@ export class CvService {
     const jobMatch = this.asObject(payload.job_match);
     const gapAnalysis = this.asObject(payload.gap_analysis);
     const roadmap = this.asObject(payload.roadmap);
+    const aiReview = this.asObject(payload.ai_review);
 
     const scoreBreakdown = this.asObject(jobMatch.scoreBreakdownJson);
     const skillGap = this.asObject(gapAnalysis.skillGap);
@@ -402,6 +403,12 @@ export class CvService {
             estimatedWeeks: this.asNumber(skill.estimated_weeks),
             baselineHours: this.asOptionalNumber(skill.baseline_hours),
             transferBonus: this.asNumber(skill.transfer_bonus),
+            transferDirectionFactor: this.asOptionalNumber(
+              skill.transfer_direction_factor,
+            ),
+            effectiveTransferBonus: this.asOptionalNumber(
+              skill.effective_transfer_bonus,
+            ),
             adjustedHours: this.asOptionalNumber(skill.adjusted_hours),
             recommendedResources: this.asObjectArray(
               skill.recommended_resources,
@@ -417,6 +424,16 @@ export class CvService {
         estimatedCompletion: this.asString(roadmap.estimated_completion),
         difficultyLevel: this.asString(roadmap.difficulty_level),
       },
+      aiReview: payload.ai_review
+        ? {
+            summary: this.asString(aiReview.summary),
+            strengths: this.asStringArray(aiReview.strengths),
+            concerns: this.asStringArray(aiReview.concerns),
+            recommendations: this.asStringArray(aiReview.recommendations),
+            verdict: this.asString(aiReview.verdict),
+            source: this.asString(aiReview.source),
+          }
+        : null,
     };
   }
 
