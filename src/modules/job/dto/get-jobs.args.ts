@@ -69,4 +69,11 @@ export class GetJobsArgs {
   @IsString()
   @Field({ nullable: true })
   experienceRange?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Field(() => Int, { nullable: true })
+  cvId?: number;
 }

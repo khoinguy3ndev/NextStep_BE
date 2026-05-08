@@ -87,4 +87,14 @@ export class CvResolver {
   ): Promise<boolean> {
     return this.cvService.deleteCv(cvId, user.userId);
   }
+
+  @Mutation(() => Cv)
+  @UseGuards(GqlAuthGuard)
+  async renameCv(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @Args("fileName") fileName: string,
+    @CurrentUser() user: User,
+  ): Promise<Cv> {
+    return this.cvService.renameCv(cvId, user.userId, fileName);
+  }
 }

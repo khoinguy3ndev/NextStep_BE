@@ -14,6 +14,7 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { basename } from "path";
 import { randomUUID } from "crypto";
+import { CvAnalysisResult } from "src/entities/cv-analysis-result.entity";
 import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
 import {
@@ -108,6 +109,26 @@ export class CvService {
 
     await this.em.removeAndFlush(cv);
     return true;
+  }
+
+  async renameCv(cvId: number, userId: number, fileName: string): Promise<Cv> {
+    const cv = await this.getCvById(cvId, userId);
+    if (!cv) {
+      throw new NotFoundException("CV not found");
+    }
+
+    const previousFileName = cv.fileName;
+    const nextFileName = this.normalizeFileName(fileName);
+
+    cv.fileName = nextFileName;
+    await this.em.nativeUpdate(
+      CvAnalysisResult,
+      { cvFilename: previousFileName },
+      { cvFilename: nextFileName },
+    );
+    await this.em.persistAndFlush(cv);
+
+    return this.em.findOneOrFail(Cv, { cvId }, { populate: ["user"] });
   }
 
   async analyzeCv(
