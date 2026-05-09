@@ -9,6 +9,7 @@ import {
   CvAnalysisHistoryType,
   CvAnalysisResponseType,
 } from "./type/cv-analysis.type";
+import { CvFileType } from "./type/cv-file.type";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
 
 @Resolver(() => Cv)
@@ -28,6 +29,15 @@ export class CvResolver {
     @CurrentUser() user: User,
   ): Promise<Cv | null> {
     return this.cvService.getCvById(cvId, user.userId);
+  }
+
+  @Query(() => CvFileType)
+  @UseGuards(GqlAuthGuard)
+  async getCvFile(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @CurrentUser() user: User,
+  ): Promise<CvFileType> {
+    return this.cvService.getFile(cvId, user.userId);
   }
 
   @Query(() => CvAnalysisHistoryType)

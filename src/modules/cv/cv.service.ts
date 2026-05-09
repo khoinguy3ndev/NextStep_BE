@@ -21,6 +21,7 @@ import {
   CvAnalysisHistoryType,
   CvAnalysisResponseType,
 } from "./type/cv-analysis.type";
+import { CvFileType } from "./type/cv-file.type";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
 
 @Injectable()
@@ -101,6 +102,21 @@ export class CvService {
       { cvId, user: { userId } },
       { populate: ["user"] },
     );
+  }
+
+  async getFile(cvId: number, userId: number): Promise<CvFileType> {
+    const cv = await this.getCvById(cvId, userId);
+    if (!cv) {
+      throw new NotFoundException("CV not found");
+    }
+
+    const file = await this.downloadCvFile(cv.fileKey);
+
+    return {
+      fileName: cv.fileName,
+      contentType: file.contentType,
+      base64: Buffer.from(file.bytes).toString("base64"),
+    };
   }
 
   async deleteCv(cvId: number, userId: number): Promise<boolean> {
