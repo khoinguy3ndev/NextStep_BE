@@ -39,6 +39,9 @@ export class CvAnalysisResult {
   @Property({ fieldName: "roadmap_json", type: "json" })
   roadmapJson!: Record<string, unknown>;
 
+  @Property({ fieldName: "ai_review_json", type: "json", nullable: true })
+  aiReviewJson?: Record<string, unknown>;
+
   @Property({ fieldName: "created_at" })
   createdAt!: Date;
 
