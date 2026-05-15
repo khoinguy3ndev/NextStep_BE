@@ -37,7 +37,7 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   async setBaseCv(
     @CurrentUser() user: User,
-    @Args("cvId", { type: () => Int }) cvId: number,
+    @Args("cvId", { type: () => Int, nullable: true }) cvId: number | null,
   ): Promise<User> {
     return this.userService.setBaseCv(user.userId, cvId);
   }

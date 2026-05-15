@@ -61,10 +61,16 @@ export class UserService {
     return user;
   }
 
-  async setBaseCv(userId: number, cvId: number): Promise<User> {
+  async setBaseCv(userId: number, cvId: number | null): Promise<User> {
     const user = await this.findById(userId);
     if (!user) {
       throw new NotFoundException("User not found");
+    }
+
+    if (cvId === null) {
+      user.baseCvId = null;
+      await this.em.persistAndFlush(user);
+      return user;
     }
 
     const cv = await this.em.findOne(Cv, { cvId, user: { userId } });
