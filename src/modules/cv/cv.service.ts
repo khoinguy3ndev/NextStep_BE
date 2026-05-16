@@ -21,6 +21,7 @@ import {
   CvAnalysisHistoryType,
   CvAnalysisResponseType,
 } from "./type/cv-analysis.type";
+import { AvatarFileType } from "./type/avatar-file.type";
 import { CvFileType } from "./type/cv-file.type";
 import { PresignedUploadResponse } from "./type/presigned-upload.response";
 
@@ -98,6 +99,27 @@ export class CvService {
     await this.em.persistAndFlush(user);
 
     return user;
+  }
+
+  async getAvatarFile(userId: number): Promise<AvatarFileType> {
+    const user = await this.em.findOne(User, { userId });
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const avatarUrl = user.avatar?.trim();
+    if (!avatarUrl) {
+      throw new NotFoundException("Avatar not found");
+    }
+
+    const fileKey = this.extractFileKeyFromUrl(avatarUrl);
+    const file = await this.downloadCvFile(fileKey);
+
+    return {
+      fileName: fileKey.split("/").pop() || "avatar",
+      contentType: file.contentType,
+      base64: Buffer.from(file.bytes).toString("base64"),
+    };
   }
 
   async createCvRecord(
@@ -295,6 +317,23 @@ export class CvService {
     return `${this.getEndpoint()}/${this.getBucketName()}/${fileKey}`;
   }
 
+  private extractFileKeyFromUrl(fileUrl: string): string {
+    try {
+      const url = new URL(fileUrl);
+      const path = url.pathname.replace(/^\/+/, "");
+      const bucketName = this.getBucketName();
+      const bucketPrefix = `${bucketName}/`;
+
+      if (path.startsWith(bucketPrefix)) {
+        return path.slice(bucketPrefix.length);
+      }
+
+      return path;
+    } catch {
+      throw new BadRequestException("Avatar URL is invalid");
+    }
+  }
+
   private getBucketName(): string {
     const bucketName = process.env.R2_BUCKET_NAME;
     if (!bucketName) {
@@ -331,7 +370,9 @@ export class CvService {
     );
 
     if (!response.Body) {
-      throw new InternalServerErrorException("Uploaded CV file could not be read");
+      throw new InternalServerErrorException(
+        "Uploaded CV file could not be read",
+      );
     }
 
     return {
@@ -388,7 +429,9 @@ export class CvService {
     }
   }
 
-  private mapAnalysisResponse(payload: Record<string, unknown>): CvAnalysisResponseType {
+  private mapAnalysisResponse(
+    payload: Record<string, unknown>,
+  ): CvAnalysisResponseType {
     const extractedProfile = this.asObject(payload.extracted_profile);
     const jobContext = this.asObject(payload.job_context);
     const jobMatch = this.asObject(payload.job_match);
@@ -407,13 +450,19 @@ export class CvService {
       extractedProfile: {
         cvLevel: this.asString(extractedProfile.cv_level),
         cvYearsExperience: this.asNumber(extractedProfile.cv_years_experience),
-        preferredLocations: this.asStringArray(extractedProfile.preferred_locations),
-        cvCertifications: this.asStringArray(extractedProfile.cv_certifications),
-        cvSkills: this.asObjectArray(extractedProfile.cv_skills).map((item) => ({
-          name: this.asString(item.name),
-          proficiency: this.asNumber(item.proficiency),
-          yearsOfExperience: this.asNumber(item.years_of_experience),
-        })),
+        preferredLocations: this.asStringArray(
+          extractedProfile.preferred_locations,
+        ),
+        cvCertifications: this.asStringArray(
+          extractedProfile.cv_certifications,
+        ),
+        cvSkills: this.asObjectArray(extractedProfile.cv_skills).map(
+          (item) => ({
+            name: this.asString(item.name),
+            proficiency: this.asNumber(item.proficiency),
+            yearsOfExperience: this.asNumber(item.years_of_experience),
+          }),
+        ),
       },
       jobContext: {
         jobId: this.asNumber(jobContext.job_id),
@@ -532,7 +581,9 @@ export class CvService {
     if (!Array.isArray(value)) return [];
 
     return value
-      .filter((item) => item && typeof item === "object" && !Array.isArray(item))
+      .filter(
+        (item) => item && typeof item === "object" && !Array.isArray(item),
+      )
       .map((item) => item as Record<string, unknown>);
   }
 
