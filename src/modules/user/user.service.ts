@@ -2,6 +2,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Cv } from "src/entities/cv.entity";
 import { User } from "src/entities/user.entity";
+import { UpdateUserProfileInput } from "./dto/profile.input";
 
 @Injectable()
 export class UserService {
@@ -43,19 +44,59 @@ export class UserService {
 
   async updateUserProfile(
     userId: number,
-    data: { name?: string; avatar?: string },
+    data: UpdateUserProfileInput,
   ): Promise<User> {
     const user = await this.findById(userId);
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    if (data.name) {
+    if (data.name?.trim()) {
       user.name = data.name;
     }
     if (data.avatar !== undefined) {
       user.avatar = data.avatar;
     }
+    if (data.currentRole !== undefined) {
+      user.currentRole = data.currentRole;
+    }
+    if (data.location !== undefined) {
+      user.location = data.location;
+    }
+    if (data.experienceYears !== undefined) {
+      user.experienceYears = data.experienceYears;
+    }
+    if (data.targetSalaryMin !== undefined) {
+      user.targetSalaryMin = data.targetSalaryMin;
+    }
+    if (data.targetSalaryMax !== undefined) {
+      user.targetSalaryMax = data.targetSalaryMax;
+    }
+    if (data.phone !== undefined) {
+      user.phone = data.phone;
+    }
+    if (data.githubUrl !== undefined) {
+      user.githubUrl = data.githubUrl;
+    }
+    if (data.linkedinUrl !== undefined) {
+      user.linkedinUrl = data.linkedinUrl;
+    }
+    if (data.portfolioUrl !== undefined) {
+      user.portfolioUrl = data.portfolioUrl;
+    }
+    if (data.skills !== undefined) {
+      user.skills = data.skills;
+    }
+    if (data.suggestedImprovements !== undefined) {
+      user.suggestedImprovements = data.suggestedImprovements;
+    }
+    if (data.experiences !== undefined) {
+      user.experiences = data.experiences;
+    }
+    if (data.careerGoals !== undefined) {
+      user.careerGoals = data.careerGoals;
+    }
+    user.updatedAt = new Date();
 
     await this.em.persistAndFlush(user);
     return user;

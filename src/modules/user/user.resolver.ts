@@ -4,6 +4,7 @@ import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { User } from "src/entities/user.entity";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
+import { UpdateUserProfileInput } from "./dto/profile.input";
 
 @Resolver()
 export class UserResolver {
@@ -24,13 +25,13 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   async updateUserProfile(
     @CurrentUser() user: User,
-    @Args("name", { type: () => String, nullable: true }) name?: string,
-    @Args("avatar", { type: () => String, nullable: true }) avatar?: string,
+    @Args("input") input: UpdateUserProfileInput,
   ): Promise<User> {
-    return this.userService.updateUserProfile(user.userId, {
-      name,
-      avatar,
+    console.log("updateUserProfile input", {
+      userId: user.userId,
+      fields: Object.keys(input),
     });
+    return this.userService.updateUserProfile(user.userId, input);
   }
 
   @Mutation(() => User)

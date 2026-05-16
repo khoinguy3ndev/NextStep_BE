@@ -53,6 +53,53 @@ export class CvService {
     };
   }
 
+  async getAvatarUploadUrl(
+    userId: number,
+    fileName: string,
+  ): Promise<PresignedUploadResponse> {
+    const normalizedFileName = this.normalizeFileName(fileName);
+    const fileKey = `avatars/${userId}/${Date.now()}-${randomUUID()}-${normalizedFileName}`;
+
+    const command = new PutObjectCommand({
+      Bucket: this.getBucketName(),
+      Key: fileKey,
+    });
+
+    const uploadUrl = await getSignedUrl(this.s3Client, command, {
+      expiresIn: 300,
+    });
+
+    return {
+      uploadUrl,
+      fileKey,
+    };
+  }
+
+  async confirmAvatarUpload(userId: number, fileKey: string): Promise<User> {
+    const normalizedFileKey = fileKey?.trim();
+
+    if (!normalizedFileKey) {
+      throw new BadRequestException("fileKey is required");
+    }
+
+    if (!normalizedFileKey.startsWith(`avatars/${userId}/`)) {
+      throw new BadRequestException(
+        "fileKey does not belong to the current user",
+      );
+    }
+
+    const user = await this.em.findOne(User, { userId });
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    user.avatar = this.buildFileUrl(normalizedFileKey);
+    user.updatedAt = new Date();
+    await this.em.persistAndFlush(user);
+
+    return user;
+  }
+
   async createCvRecord(
     userId: number,
     data: { fileName: string; fileKey: string },
@@ -240,8 +287,12 @@ export class CvService {
   }
 
   private buildFileUrl(fileKey: string): string {
-    const endpoint = this.getEndpoint();
-    return `${endpoint}/${this.getBucketName()}/${fileKey}`;
+    const publicUrl = process.env.R2_PUBLIC_URL;
+    if (publicUrl) {
+      return `${publicUrl.replace(/\/$/, "")}/${fileKey}`;
+    }
+
+    return `${this.getEndpoint()}/${this.getBucketName()}/${fileKey}`;
   }
 
   private getBucketName(): string {

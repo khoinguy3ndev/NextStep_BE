@@ -7,11 +7,16 @@ import {
   Property,
   Unique,
 } from "@mikro-orm/core";
-import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
+import { Field, Float, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Cv } from "./cv.entity";
 import { Role } from "./role.enum";
 import { Roadmap } from "./roadmap.entity";
 import { SearchProfile } from "./search-profile.entity";
+import {
+  CareerGoals,
+  ProfileExperience,
+  SuggestedImprovement,
+} from "../modules/user/dto/profile.input";
 
 @ObjectType()
 @Entity({ tableName: "users" })
@@ -33,13 +38,69 @@ export class User {
   @Property({ fieldName: "name" })
   name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Property({ fieldName: "avatar", nullable: true })
-  avatar?: string;
+  avatar?: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Property({ fieldName: "google_id", nullable: true })
-  googleId?: string;
+  googleId?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "current_role", nullable: true })
+  currentRole?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "location", nullable: true })
+  location?: string | null;
+
+  @Field(() => Float, { nullable: true })
+  @Property({ fieldName: "experience_years", nullable: true })
+  experienceYears?: number | null;
+
+  @Field(() => Float, { nullable: true })
+  @Property({ fieldName: "target_salary_min", nullable: true })
+  targetSalaryMin?: number | null;
+
+  @Field(() => Float, { nullable: true })
+  @Property({ fieldName: "target_salary_max", nullable: true })
+  targetSalaryMax?: number | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "phone", nullable: true })
+  phone?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "github_url", nullable: true })
+  githubUrl?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "linkedin_url", nullable: true })
+  linkedinUrl?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Property({ fieldName: "portfolio_url", nullable: true })
+  portfolioUrl?: string | null;
+
+  @Field(() => [String], { nullable: true })
+  @Property({ fieldName: "skills", type: "text[]", nullable: true })
+  skills?: string[] | null;
+
+  @Field(() => [SuggestedImprovement], { nullable: true })
+  @Property({
+    fieldName: "suggested_improvements",
+    type: "json",
+    nullable: true,
+  })
+  suggestedImprovements?: SuggestedImprovement[] | null;
+
+  @Field(() => [ProfileExperience], { nullable: true })
+  @Property({ fieldName: "experiences", type: "json", nullable: true })
+  experiences?: ProfileExperience[] | null;
+
+  @Field(() => CareerGoals, { nullable: true })
+  @Property({ fieldName: "career_goals", type: "json", nullable: true })
+  careerGoals?: CareerGoals | null;
 
   @Field(() => Role)
   @Enum({ items: () => Role, fieldName: "role", default: Role.USER })

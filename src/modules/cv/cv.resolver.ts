@@ -68,6 +68,24 @@ export class CvResolver {
     return this.cvService.getUploadUrl(user.userId, fileName);
   }
 
+  @Mutation(() => PresignedUploadResponse)
+  @UseGuards(GqlAuthGuard)
+  async getAvatarUploadUrl(
+    @Args("fileName") fileName: string,
+    @CurrentUser() user: User,
+  ): Promise<PresignedUploadResponse> {
+    return this.cvService.getAvatarUploadUrl(user.userId, fileName);
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  async confirmAvatarUpload(
+    @Args("fileKey") fileKey: string,
+    @CurrentUser() user: User,
+  ): Promise<User> {
+    return this.cvService.confirmAvatarUpload(user.userId, fileKey);
+  }
+
   @Mutation(() => Cv)
   @UseGuards(GqlAuthGuard)
   async confirmCvUpload(
