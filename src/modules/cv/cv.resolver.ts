@@ -116,6 +116,28 @@ export class CvResolver {
     return this.cvService.analyzeCv(user.userId, cvId, jobId);
   }
 
+  @Mutation(() => CvAnalysisResponseType)
+  @UseGuards(GqlAuthGuard)
+  async analyzeCvWithJd(
+    @Args("cvId", { type: () => Int }) cvId: number,
+    @Args("jdText", { type: () => String, nullable: true })
+    jdText: string | null,
+    @Args("jdFileBase64", { type: () => String, nullable: true })
+    jdFileBase64: string | null,
+    @Args("jdFileName", { type: () => String, nullable: true })
+    jdFileName: string | null,
+    @Args("jdContentType", { type: () => String, nullable: true })
+    jdContentType: string | null,
+    @CurrentUser() user: User,
+  ): Promise<CvAnalysisResponseType> {
+    return this.cvService.analyzeCvWithJd(user.userId, cvId, {
+      jdText,
+      jdFileBase64,
+      jdFileName,
+      jdContentType,
+    });
+  }
+
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
   async deleteCv(

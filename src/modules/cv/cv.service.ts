@@ -245,6 +245,65 @@ export class CvService {
     return this.mapAnalysisResponse(payload);
   }
 
+  async analyzeCvWithJd(
+    userId: number,
+    cvId: number,
+    input: {
+      jdText?: string | null;
+      jdFileBase64?: string | null;
+      jdFileName?: string | null;
+      jdContentType?: string | null;
+    },
+  ): Promise<CvAnalysisResponseType> {
+    const cv = await this.getCvById(cvId, userId);
+    if (!cv) {
+      throw new NotFoundException("CV not found");
+    }
+
+    const normalizedJdText = input.jdText?.trim();
+    const normalizedJdFileBase64 = input.jdFileBase64?.trim();
+
+    if (!normalizedJdText && !normalizedJdFileBase64) {
+      throw new BadRequestException("Provide jdText or jdFileBase64");
+    }
+
+    const file = await this.downloadCvFile(cv.fileKey);
+    const formData = new FormData();
+    formData.append(
+      "cv_file",
+      new Blob([Buffer.from(file.bytes)], { type: file.contentType }),
+      cv.fileName,
+    );
+
+    if (normalizedJdText) {
+      formData.append("jd_text", normalizedJdText);
+    }
+
+    if (normalizedJdFileBase64) {
+      const jdBytes = Buffer.from(normalizedJdFileBase64, "base64");
+      if (jdBytes.length === 0) {
+        throw new BadRequestException("JD file is empty");
+      }
+
+      formData.append(
+        "jd_file",
+        new Blob([jdBytes], {
+          type:
+            input.jdContentType?.trim() ||
+            this.inferContentTypeFromFileName(input.jdFileName || ""),
+        }),
+        this.normalizeFileName(input.jdFileName || "job-description.txt"),
+      );
+    }
+
+    const payload = await this.callAi("/api/v1/cv/scan-upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    return this.mapAnalysisResponse(payload);
+  }
+
   async getAnalysisResult(
     userId: number,
     analysisId: number,
