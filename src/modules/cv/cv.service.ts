@@ -275,6 +275,8 @@ export class CvService {
       new Blob([Buffer.from(file.bytes)], { type: file.contentType }),
       cv.fileName,
     );
+    formData.append("user_id", String(userId));
+    formData.append("cv_id", String(cv.cvId));
 
     if (normalizedJdText) {
       formData.append("jd_text", normalizedJdText);
