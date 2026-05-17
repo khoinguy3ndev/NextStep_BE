@@ -46,6 +46,22 @@ function normalizeSkillName(value: unknown): string | null {
   return normalized || null;
 }
 
+function normalizeEmploymentTypeFilter(value?: string | null): string | null {
+  const normalized = value?.trim().toUpperCase().replace(/[\s-]+/g, "_");
+  if (!normalized || normalized === "ALL") return null;
+
+  const map: Record<string, string> = {
+    FULL_TIME: "fulltime",
+    PART_TIME: "part-time",
+    CONTRACT: "contract",
+    INTERNSHIP: "internship",
+    TEMPORARY: "temporary",
+    VOLUNTEER: "volunteer",
+  };
+
+  return map[normalized] ?? value!.trim().toLowerCase();
+}
+
 function normalizeImportance(value: unknown): number {
   const numeric = Number(value || 0);
   if (!Number.isFinite(numeric) || numeric <= 0) return 0.5;
@@ -136,9 +152,12 @@ export class JobService {
       params.push(threshold, threshold);
     }
 
-    if (employmentType) {
+    const normalizedEmploymentType =
+      normalizeEmploymentTypeFilter(employmentType);
+
+    if (normalizedEmploymentType) {
       where.push(`lower(coalesce(j.employment_type, '')) like ?`);
-      params.push(`%${employmentType.toLowerCase()}%`);
+      params.push(`%${normalizedEmploymentType}%`);
     }
 
     const experienceBounds = getExperienceRangeBounds(experienceRange);
