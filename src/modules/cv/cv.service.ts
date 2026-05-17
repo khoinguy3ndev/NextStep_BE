@@ -633,7 +633,9 @@ export class CvService {
     response: CvAnalysisResponseType,
   ): Promise<CvAnalysisResponseType> {
     const jobId = response.jobContext.jobId;
-    if (!jobId) return response;
+    if (!jobId) {
+      return this.enrichUploadedJobContext(response);
+    }
 
     const job = await this.em.findOne(
       Job,
@@ -657,6 +659,95 @@ export class CvService {
       skillsQualifications: job.skillsQualifications ?? null,
       benefits: job.benefits ?? null,
       experience: job.experience ?? null,
+    };
+
+    return response;
+  }
+
+  private async enrichUploadedJobContext(
+    response: CvAnalysisResponseType,
+  ): Promise<CvAnalysisResponseType> {
+    const analysisId = response.analysisResultId;
+    if (!analysisId) return response;
+
+    const analysis = await this.em.findOne(CvAnalysisResult, { analysisId });
+    const jobUploadId = analysis?.jobUploadId;
+    if (!jobUploadId) return response;
+
+    const rows = await this.em.getConnection().execute<
+      Array<{
+        company_name?: string | null;
+        title?: string | null;
+        employment_type?: string | null;
+        salary_min?: number | null;
+        salary_max?: number | null;
+        currency?: string | null;
+        posted_at?: Date | string | null;
+        created_at?: Date | string | null;
+        application_deadline?: Date | string | null;
+        role_responsibilities?: string | null;
+        skills_qualifications?: string | null;
+        benefits?: string | null;
+        experience?: string | null;
+        location?: string | null;
+        job_level?: string | null;
+        job_years_required?: number | null;
+        job_is_remote?: boolean | null;
+        source_url?: string | null;
+      }>
+    >(
+      `
+        SELECT
+          company_name,
+          title,
+          employment_type,
+          salary_min,
+          salary_max,
+          currency,
+          posted_at,
+          created_at,
+          application_deadline,
+          role_responsibilities,
+          skills_qualifications,
+          benefits,
+          experience,
+          location,
+          job_level,
+          job_years_required,
+          job_is_remote,
+          source_url
+        FROM job_uploads
+        WHERE job_upload_id = ?
+        LIMIT 1
+      `,
+      [jobUploadId],
+    );
+    const uploadedJob = rows[0];
+    if (!uploadedJob) return response;
+
+    response.jobContext = {
+      ...response.jobContext,
+      title: uploadedJob.title ?? response.jobContext.title,
+      sourceUrl: uploadedJob.source_url ?? response.jobContext.sourceUrl,
+      jobLevel: uploadedJob.job_level ?? response.jobContext.jobLevel,
+      jobYearsRequired:
+        uploadedJob.job_years_required ?? response.jobContext.jobYearsRequired,
+      jobLocation: uploadedJob.location ?? response.jobContext.jobLocation,
+      jobIsRemote: uploadedJob.job_is_remote ?? response.jobContext.jobIsRemote,
+      companyName: uploadedJob.company_name ?? null,
+      employmentType: uploadedJob.employment_type ?? null,
+      salaryMin: uploadedJob.salary_min ?? null,
+      salaryMax: uploadedJob.salary_max ?? null,
+      currency: uploadedJob.currency ?? null,
+      postedAt: this.asOptionalDate(uploadedJob.posted_at),
+      scrapedAt: this.asOptionalDate(uploadedJob.created_at),
+      applicationDeadline: this.asOptionalDate(
+        uploadedJob.application_deadline,
+      ),
+      roleResponsibilities: uploadedJob.role_responsibilities ?? null,
+      skillsQualifications: uploadedJob.skills_qualifications ?? null,
+      benefits: uploadedJob.benefits ?? null,
+      experience: uploadedJob.experience ?? null,
     };
 
     return response;
@@ -694,6 +785,15 @@ export class CvService {
 
   private asOptionalNumber(value: unknown): number | null {
     return typeof value === "number" && Number.isFinite(value) ? value : null;
+  }
+
+  private asOptionalDate(value: unknown): Date | null {
+    if (value instanceof Date) return value;
+    if (typeof value !== "string") return null;
+
+    const timestamp = new Date(value).getTime();
+    if (Number.isNaN(timestamp)) return null;
+    return new Date(timestamp);
   }
 
   private asStringArray(value: unknown): string[] {

@@ -15,8 +15,11 @@ export class CvAnalysisResult {
   @PrimaryKey({ fieldName: "analysis_id" })
   analysisId!: number;
 
-  @ManyToOne(() => Job, { fieldName: "job_job_id" })
-  job!: Job;
+  @ManyToOne(() => Job, { fieldName: "job_job_id", nullable: true })
+  job?: Job;
+
+  @Property({ fieldName: "job_upload_id", nullable: true })
+  jobUploadId?: number;
 
   @Property({ fieldName: "cv_filename", nullable: true })
   cvFilename?: string;
