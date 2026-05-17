@@ -73,6 +73,42 @@ export class JobContextType {
 
   @Field(() => [JobSkillAnalysis])
   jobSkills!: JobSkillAnalysis[];
+
+  @Field(() => String, { nullable: true })
+  companyName?: string | null;
+
+  @Field(() => String, { nullable: true })
+  employmentType?: string | null;
+
+  @Field(() => Int, { nullable: true })
+  salaryMin?: number | null;
+
+  @Field(() => Int, { nullable: true })
+  salaryMax?: number | null;
+
+  @Field(() => String, { nullable: true })
+  currency?: string | null;
+
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  postedAt?: Date | null;
+
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  scrapedAt?: Date | null;
+
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  applicationDeadline?: Date | null;
+
+  @Field(() => String, { nullable: true })
+  roleResponsibilities?: string | null;
+
+  @Field(() => String, { nullable: true })
+  skillsQualifications?: string | null;
+
+  @Field(() => String, { nullable: true })
+  benefits?: string | null;
+
+  @Field(() => String, { nullable: true })
+  experience?: string | null;
 }
 
 @ObjectType()

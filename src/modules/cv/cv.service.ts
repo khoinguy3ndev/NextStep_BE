@@ -16,6 +16,7 @@ import { basename } from "path";
 import { randomUUID } from "crypto";
 import { CvAnalysisResult } from "src/entities/cv-analysis-result.entity";
 import { Cv } from "src/entities/cv.entity";
+import { Job } from "src/entities/job.entity";
 import { User } from "src/entities/user.entity";
 import {
   CvAnalysisHistoryType,
@@ -242,7 +243,7 @@ export class CvService {
       body: formData,
     });
 
-    return this.mapAnalysisResponse(payload);
+    return this.enrichAnalysisJobContext(this.mapAnalysisResponse(payload));
   }
 
   async analyzeCvWithJd(
@@ -301,7 +302,7 @@ export class CvService {
       body: formData,
     });
 
-    return this.mapAnalysisResponse(payload);
+    return this.enrichAnalysisJobContext(this.mapAnalysisResponse(payload));
   }
 
   async getAnalysisResult(
@@ -318,7 +319,7 @@ export class CvService {
       },
     );
 
-    return this.mapAnalysisResponse(payload);
+    return this.enrichAnalysisJobContext(this.mapAnalysisResponse(payload));
   }
 
   async getAnalysisHistory(
@@ -626,6 +627,39 @@ export class CvService {
           }
         : null,
     };
+  }
+
+  private async enrichAnalysisJobContext(
+    response: CvAnalysisResponseType,
+  ): Promise<CvAnalysisResponseType> {
+    const jobId = response.jobContext.jobId;
+    if (!jobId) return response;
+
+    const job = await this.em.findOne(
+      Job,
+      { jobId },
+      { populate: ["company"] },
+    );
+
+    if (!job) return response;
+
+    response.jobContext = {
+      ...response.jobContext,
+      companyName: job.company?.name ?? null,
+      employmentType: job.employmentType ?? null,
+      salaryMin: job.salaryMin ?? null,
+      salaryMax: job.salaryMax ?? null,
+      currency: job.currency ?? null,
+      postedAt: job.postedAt ?? null,
+      scrapedAt: job.scrapedAt ?? null,
+      applicationDeadline: job.applicationDeadline ?? null,
+      roleResponsibilities: job.roleResponsibilities ?? null,
+      skillsQualifications: job.skillsQualifications ?? null,
+      benefits: job.benefits ?? null,
+      experience: job.experience ?? null,
+    };
+
+    return response;
   }
 
   private asObject(value: unknown): Record<string, unknown> {
