@@ -24,7 +24,7 @@ export class JobSkill {
   skill!: Skill;
 
   @Field()
-  @Property({ type: "float" })
+  @Property({ fieldName: "importance", type: "float" })
   importance!: number;
 
   @Field({ nullable: true })

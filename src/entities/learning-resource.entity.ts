@@ -12,35 +12,35 @@ import { RoadmapItem } from './roadmap-item.entity';
 @Entity({ tableName: 'learning_resources' })
 export class LearningResource {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'resource_id' })
   resourceId!: number;
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'title' })
   title!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: 'provider', nullable: true })
   provider?: string;
 
   @Field()
-  @Property()
+  @Property({ fieldName: 'url' })
   url!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: 'int' })
+  @Property({ fieldName: 'cost', nullable: true, type: 'int' })
   cost?: number;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: 'int' })
+  @Property({ fieldName: 'duration_hours', nullable: true, type: 'int' })
   durationHours?: number;
 
   @Field(() => [String], { nullable: true })
-  @Property({ type: 'text[]', default: [] })
+  @Property({ fieldName: 'tags', type: 'text[]' })
   tags: string[] = [];
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ fieldName: 'language', nullable: true })
   language?: string;
 
   @OneToMany(() => RoadmapItem, (item) => item.resource)

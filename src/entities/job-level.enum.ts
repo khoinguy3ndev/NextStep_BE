@@ -1,13 +1,13 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum JobLevel {
-  INTERN = 'intern',
-  JUNIOR = 'junior',
-  MID = 'mid',
-  SENIOR = 'senior',
-  LEAD = 'lead',
+  Intern = "intern",
+  Junior = "junior",
+  Mid = "mid",
+  Senior = "senior",
+  Lead = "lead",
 }
 
 registerEnumType(JobLevel, {
-  name: 'JobLevel',
+  name: "JobLevel",
 });

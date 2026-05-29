@@ -1,4 +1,8 @@
 import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { UseGuards } from "@nestjs/common";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { User } from "src/entities/user.entity";
+import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
 import { JobService } from "./job.service";
 import { Job } from "src/entities/job.entity";
 import { CreateJobInput } from "./dto/create-job.input";
@@ -11,8 +15,12 @@ export class JobResolver {
   constructor(private readonly jobService: JobService) {}
 
   @Query(() => JobPagination)
-  async getJobs(@Args() args: GetJobsArgs): Promise<JobPagination> {
-    return this.jobService.findAll(args);
+  @UseGuards(GqlAuthGuard)
+  async getJobs(
+    @Args() args: GetJobsArgs,
+    @CurrentUser() user: User,
+  ): Promise<JobPagination> {
+    return this.jobService.findAll(args, user.userId);
   }
 
   @Query(() => Job, { nullable: true })

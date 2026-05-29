@@ -1,10 +1,10 @@
-import { ArgumentsHost, Catch, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 
 @Catch(HttpException)
 export class GqlHttpExceptionFilter implements GqlExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: HttpException, _host: ArgumentsHost) {
     const status = exception.getStatus();
     const response = exception.getResponse();
     const message =
@@ -17,9 +17,12 @@ export class GqlHttpExceptionFilter implements GqlExceptionFilter {
       ? message.join(', ')
       : message;
 
+    const graphQlCode =
+      status === HttpStatus.UNAUTHORIZED ? 'UNAUTHENTICATED' : String(status);
+
     return new GraphQLError(formattedMessage, {
       extensions: {
-        code: status,
+        code: graphQlCode,
         http: { status: status },
         originalError: response,
       },

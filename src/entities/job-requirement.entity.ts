@@ -14,24 +14,31 @@ import { Skill } from './skill.entity';
 @Entity({ tableName: 'job_requirements' })
 export class JobRequirement {
   @Field(() => ID)
-  @PrimaryKey()
+  @PrimaryKey({ fieldName: 'requirement_id' })
   requirementId!: number;
 
-  @ManyToOne(() => Job)
+  @ManyToOne(() => Job, { fieldName: 'job_job_id' })
   job!: Job;
 
   @Field(() => RequirementType)
-  @Enum({ items: () => RequirementType, nativeEnumName: 'requirement_type' })
+  @Enum({
+    items: () => RequirementType,
+    nativeEnumName: 'requirement_type',
+    fieldName: 'type',
+  })
   type!: RequirementType;
 
   @Field()
-  @Property({ type: 'text' })
+  @Property({ fieldName: 'raw_text', type: 'text' })
   rawText!: string;
 
   @Field({ nullable: true })
-  @Property({ nullable: true, type: 'int' })
+  @Property({ fieldName: 'years_exp', nullable: true, type: 'int' })
   yearsExp?: number;
 
-  @ManyToOne(() => Skill, { nullable: true })
+  @ManyToOne(() => Skill, {
+    fieldName: 'normalized_skill_skill_id',
+    nullable: true,
+  })
   normalizedSkill?: Skill;
 }

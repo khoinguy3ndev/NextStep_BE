@@ -2,12 +2,13 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Module } from "@nestjs/common";
 import { Cv } from "src/entities/cv.entity";
+import { User } from "src/entities/user.entity";
 import { AuthModule } from "src/modules/auth/auth.module";
 import { CvResolver } from "./cv.resolver";
 import { CvService } from "./cv.service";
 
 @Module({
-  imports: [AuthModule, MikroOrmModule.forFeature([Cv])],
+  imports: [AuthModule, MikroOrmModule.forFeature([Cv, User])],
   providers: [
     {
       provide: S3Client,

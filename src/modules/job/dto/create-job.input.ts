@@ -53,6 +53,37 @@ export class CreateJobInput {
   @IsNotEmpty({ message: "descriptionRaw must not be empty" })
   descriptionRaw!: string;
 
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ message: "roleResponsibilities must be a string" })
+  roleResponsibilities?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ message: "skillsQualifications must be a string" })
+  skillsQualifications?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ message: "benefits must be a string" })
+  benefits?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ message: "employmentType must be a string" })
+  employmentType?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ message: "experience must be a string" })
+  experience?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: "applicationDeadline must be a valid date" })
+  applicationDeadline?: Date;
+
   @Field()
   @IsString({ message: "sourceUrl must be a string" })
   @IsNotEmpty({ message: "sourceUrl must not be empty" })
