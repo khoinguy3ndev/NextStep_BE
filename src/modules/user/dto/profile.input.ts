@@ -1,4 +1,10 @@
-import { Field, Float, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
+import {
+  Field,
+  Float,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import {
   IsArray,
@@ -17,11 +23,12 @@ export enum SuggestedImprovementStatus {
 }
 
 export enum ExperienceType {
-  WORK = "WORK",
+  FULL_TIME = "FULL_TIME",
+  PART_TIME = "PART_TIME",
   INTERNSHIP = "INTERNSHIP",
-  PROJECT = "PROJECT",
   FREELANCE = "FREELANCE",
-  EDUCATION = "EDUCATION",
+  CONTRACT = "CONTRACT",
+  PROJECT = "PROJECT",
 }
 
 export enum WorkStyle {
