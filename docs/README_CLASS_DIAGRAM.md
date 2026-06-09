@@ -137,3 +137,30 @@ RagDocument "1" --> "*" RagChunk : chunks
 - `Job` ↔ `Skill` là quan hệ nhiều-nhiều thông qua pivot entity `JobSkill`.
 - `EntityEmbedding` là bảng embedding dùng chung theo cặp (`entityType`, `entityId`), không ràng buộc FK trực tiếp đến từng entity cụ thể.
 - `AlembicVersion` và `MikroOrmMigration` phục vụ theo dõi migration, không tham gia nghiệp vụ chính.
+
+## 4) Danh sách bảng dữ liệu
+
+| STT | Tên bảng | Mô tả dữ liệu lưu trữ |
+| --- | --- | --- |
+| 1 | `users` | Lưu trữ thông tin tài khoản người dùng như họ tên, email, mật khẩu đã mã hóa, ảnh đại diện, tài khoản Google, vai trò, vị trí hiện tại, kinh nghiệm, mức lương mục tiêu, liên hệ, hồ sơ nghề nghiệp và dữ liệu hồ sơ cá nhân. |
+| 2 | `companies` | Lưu trữ thông tin công ty tuyển dụng như tên, website, ngành nghề, quy mô, địa điểm và logo. |
+| 3 | `jobs` | Lưu trữ thông tin tin tuyển dụng như công ty đăng tuyển, tiêu đề, cấp độ, địa điểm, mức lương, mô tả gốc/đã xử lý, trách nhiệm, kỹ năng yêu cầu, phúc lợi, loại hình việc làm, kinh nghiệm, hạn ứng tuyển, nguồn đăng và trạng thái. |
+| 4 | `job_skills` | Lưu liên kết nhiều-nhiều giữa job và skill, bao gồm mức độ quan trọng và trích dẫn bằng chứng cho từng kỹ năng. |
+| 5 | `job_requirements` | Lưu các yêu cầu có cấu trúc của một job như loại yêu cầu, nội dung gốc, số năm kinh nghiệm và kỹ năng đã chuẩn hóa nếu có. |
+| 6 | `skills` | Lưu danh mục kỹ năng chuẩn hóa của hệ thống, bao gồm tên kỹ năng, nhóm phân loại, danh sách alias và trạng thái hoạt động. |
+| 7 | `cv_skills` | Lưu các kỹ năng được trích xuất từ CV trong một lần phân tích, gồm độ tin cậy và nguồn suy ra. |
+| 8 | `skill_gaps` | Lưu các kỹ năng còn thiếu sau khi so khớp CV với job, bao gồm điểm ưu tiên và lý do gap. |
+| 9 | `cv_analysis_results` | Lưu kết quả phân tích CV bằng AI theo từng lần chạy, gồm job tham chiếu, trích xuất profile, ngữ cảnh job, kết quả match, phân tích gap, roadmap gợi ý và review AI. |
+| 10 | `cvs` | Lưu thông tin file CV của người dùng như tên file, key lưu trữ, URL và thời điểm upload. |
+| 11 | `search_profiles` | Lưu cấu hình tìm việc của người dùng như mức lương mong muốn, loại tiền tệ, địa điểm, cấp độ mục tiêu, chức danh mục tiêu và ngành nghề quan tâm. |
+| 12 | `roadmaps` | Lưu roadmap phát triển nghề nghiệp của người dùng, gồm mục tiêu, thời gian dự kiến, trạng thái và job mục tiêu nếu có. |
+| 13 | `roadmap_items` | Lưu các hạng mục chi tiết trong roadmap như skill cần học, độ ưu tiên, số tuần ước tính, tài nguyên học tập tham chiếu và ghi chú. |
+| 14 | `learning_resources` | Lưu danh mục tài nguyên học tập như tiêu đề, nhà cung cấp, URL, chi phí, thời lượng, tag và ngôn ngữ. |
+| 15 | `skill_courses` | Lưu các khóa học gắn với từng skill, bao gồm nền tảng, tiêu đề, URL, thời lượng, cấp độ và số giờ ước tính. |
+| 16 | `rag_documents` | Lưu tài liệu gốc phục vụ RAG, gồm loại tài liệu, tiêu đề, nguồn, nội dung, ngôn ngữ và thời điểm tạo. |
+| 17 | `rag_chunks` | Lưu các đoạn văn bản đã chia nhỏ từ tài liệu RAG, kèm token count, vector embedding, model embedding và thời điểm tạo. |
+| 18 | `entity_embeddings` | Lưu embedding dùng chung cho nhiều loại entity, gồm loại entity, ID entity, vector embedding, model embedding, kích thước vector và thời điểm tạo. |
+| 19 | `alembic_version` | Lưu phiên bản migration của Alembic để theo dõi trạng thái schema. |
+| 20 | `mikro_orm_migrations` | Lưu lịch sử migration đã chạy của MikroORM, gồm ID, tên migration và thời điểm thực thi. |
+
+**Ghi chú:** Ngoài các entity trong `src/entities`, migration hiện tại còn có một số bảng kỹ thuật như `ai_jobs`, `ai_job_attempts` và `skill_aliases`. Các bảng này đang được quản lý ở tầng migration nhưng chưa có entity riêng trong thư mục entity.
