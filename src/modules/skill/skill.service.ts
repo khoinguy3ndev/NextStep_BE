@@ -7,8 +7,12 @@ import {
 } from "@nestjs/common";
 import { Job } from "src/entities/job.entity";
 import { JobSkill } from "src/entities/job-skill.entity";
+import { SkillCourse } from "src/entities/skill-course.entity";
 import { Skill } from "src/entities/skill.entity";
+import { AdminCourseOutput } from "./dto/admin-course.output";
+import { CreateCourseInput } from "./dto/create-course.input";
 import { CreateSkillInput } from "./dto/create-skill.input";
+import { UpdateCourseInput } from "./dto/update-course.input";
 
 @Injectable()
 export class SkillService {
@@ -20,6 +24,110 @@ export class SkillService {
 
   async findSkillById(skillId: number): Promise<Skill | null> {
     return this.em.findOne(Skill, { skillId });
+  }
+
+  async findAllCourses(): Promise<AdminCourseOutput[]> {
+    const courses = await this.em.find(
+      SkillCourse,
+      {},
+      { orderBy: { title: "ASC" }, populate: ["skill"] },
+    );
+
+    return courses.map((course) => ({
+      courseId: course.id,
+      title: course.title,
+      provider: course.platform ?? null,
+      url: course.url ?? null,
+      duration: course.duration ?? null,
+      level: course.level ?? null,
+      durationHours: course.durationHours ?? null,
+      rating: null,
+      status: "published",
+      skillId: course.skill?.skillId ?? null,
+      skillName: course.skill?.name ?? null,
+    }));
+  }
+
+  private mapCourse(course: SkillCourse): AdminCourseOutput {
+    return {
+      courseId: course.id,
+      title: course.title,
+      provider: course.platform ?? null,
+      url: course.url ?? null,
+      duration: course.duration ?? null,
+      level: course.level ?? null,
+      durationHours: course.durationHours ?? null,
+      rating: null,
+      status: "published",
+      skillId: course.skill?.skillId ?? null,
+      skillName: course.skill?.name ?? null,
+    };
+  }
+
+  async createCourse(input: CreateCourseInput): Promise<AdminCourseOutput> {
+    const skill = await this.findSkillById(input.skillId);
+    if (!skill) {
+      throw new NotFoundException("Skill not found");
+    }
+
+    const course = this.em.create(SkillCourse, {
+      skill,
+      title: input.title.trim(),
+      platform: input.provider?.trim() || undefined,
+      url: input.url?.trim() || undefined,
+      duration: input.duration?.trim() || undefined,
+      level: input.level?.trim() || undefined,
+      durationHours: input.durationHours,
+    } as any);
+
+    await this.em.persistAndFlush(course);
+    await this.em.populate(course, ["skill"]);
+
+    return this.mapCourse(course);
+  }
+
+  async updateCourse(input: UpdateCourseInput): Promise<AdminCourseOutput> {
+    const { courseId, skillId, provider, ...data } = input;
+    const course = await this.em.findOne(
+      SkillCourse,
+      { id: courseId },
+      { populate: ["skill"] },
+    );
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+
+    if (skillId !== undefined) {
+      const skill = await this.findSkillById(skillId);
+      if (!skill) {
+        throw new NotFoundException("Skill not found");
+      }
+      course.skill = skill;
+    }
+
+    if (data.title !== undefined) course.title = data.title.trim();
+    if (provider !== undefined) course.platform = provider?.trim() || undefined;
+    if (data.url !== undefined) course.url = data.url?.trim() || undefined;
+    if (data.duration !== undefined) {
+      course.duration = data.duration?.trim() || undefined;
+    }
+    if (data.level !== undefined) course.level = data.level?.trim() || undefined;
+    if (data.durationHours !== undefined) {
+      course.durationHours = data.durationHours;
+    }
+
+    await this.em.persistAndFlush(course);
+    await this.em.populate(course, ["skill"]);
+
+    return this.mapCourse(course);
+  }
+
+  async deleteCourse(courseId: number): Promise<boolean> {
+    const course = await this.em.findOne(SkillCourse, { id: courseId });
+    if (!course) return false;
+
+    await this.em.removeAndFlush(course);
+    return true;
   }
 
   async createSkill(input: CreateSkillInput): Promise<Skill> {
