@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
 
-import dotenv from 'dotenv';
-import { ValidationPipe } from '@nestjs/common';
-import { GqlHttpExceptionFilter } from './common/filters/gql-exception.filter';
+import dotenv from "dotenv";
+import { ValidationPipe } from "@nestjs/common";
+import { GqlHttpExceptionFilter } from "./common/filters/gql-exception.filter";
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: true,
     credentials: true,
   });
 
@@ -26,6 +26,6 @@ async function bootstrap() {
   );
 
   await app.listen(process.env.PORT || 3003);
-  console.log('Application is running on: http://localhost:3003/graphql');
+  console.log("Application is running on: http://localhost:3003/graphql");
 }
 bootstrap();
