@@ -1,7 +1,10 @@
 import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Job } from "src/entities/job.entity";
 import { Skill } from "src/entities/skill.entity";
+import { AdminCourseOutput } from "./dto/admin-course.output";
+import { CreateCourseInput } from "./dto/create-course.input";
 import { CreateSkillInput } from "./dto/create-skill.input";
+import { UpdateCourseInput } from "./dto/update-course.input";
 import { UpdateSkillInput } from "./dto/update-skill.input";
 import { SkillService } from "./skill.service";
 
@@ -19,6 +22,11 @@ export class SkillResolver {
     @Args("skillId", { type: () => Int }) skillId: number,
   ): Promise<Skill | null> {
     return this.skillService.findSkillById(skillId);
+  }
+
+  @Query(() => [AdminCourseOutput])
+  async getAllCourses(): Promise<AdminCourseOutput[]> {
+    return this.skillService.findAllCourses();
   }
 
   @Mutation(() => Skill)
@@ -43,6 +51,27 @@ export class SkillResolver {
     @Args("skillId", { type: () => Int }) skillId: number,
   ): Promise<boolean> {
     return this.skillService.deleteSkill(skillId);
+  }
+
+  @Mutation(() => AdminCourseOutput)
+  async createCourse(
+    @Args("input") input: CreateCourseInput,
+  ): Promise<AdminCourseOutput> {
+    return this.skillService.createCourse(input);
+  }
+
+  @Mutation(() => AdminCourseOutput)
+  async updateCourse(
+    @Args("input") input: UpdateCourseInput,
+  ): Promise<AdminCourseOutput> {
+    return this.skillService.updateCourse(input);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteCourse(
+    @Args("courseId", { type: () => Int }) courseId: number,
+  ): Promise<boolean> {
+    return this.skillService.deleteCourse(courseId);
   }
 
   @Mutation(() => Job)

@@ -1,9 +1,11 @@
-import { UseGuards } from "@nestjs/common";
+import { ForbiddenException, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { User } from "src/entities/user.entity";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { GqlAuthGuard } from "src/modules/auth/guards/auth.guard";
+import { Role } from "src/entities/role.enum";
+import { AdminUserSummary } from "./dto/admin-user-summary.output";
 import { UpdateUserProfileInput } from "./dto/profile.input";
 
 @Resolver()
@@ -19,6 +21,16 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   async getUserById(@Args("userId") userId: number): Promise<User | null> {
     return this.userService.findById(userId);
+  }
+
+  @Query(() => [AdminUserSummary])
+  @UseGuards(GqlAuthGuard)
+  async adminUsers(@CurrentUser() user: User): Promise<AdminUserSummary[]> {
+    if (user.role !== Role.ADMIN) {
+      throw new ForbiddenException("Admin access required");
+    }
+
+    return this.userService.findAdminUserSummaries();
   }
 
   @Mutation(() => User)
@@ -41,6 +53,53 @@ export class UserResolver {
     @Args("cvId", { type: () => Int, nullable: true }) cvId: number | null,
   ): Promise<User> {
     return this.userService.setBaseCv(user.userId, cvId);
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  async adminUpdateUserRole(
+    @CurrentUser() user: User,
+    @Args("userId", { type: () => Int }) userId: number,
+    @Args("role", { type: () => Role }) role: Role,
+  ): Promise<User> {
+    if (user.role !== Role.ADMIN) {
+      throw new ForbiddenException("Admin access required");
+    }
+
+    return this.userService.updateUserRole(userId, role);
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  async adminCreateUser(
+    @CurrentUser() user: User,
+    @Args("name") name: string,
+    @Args("email") email: string,
+    @Args("password") password: string,
+    @Args("role", { type: () => Role }) role: Role,
+  ): Promise<User> {
+    if (user.role !== Role.ADMIN) {
+      throw new ForbiddenException("Admin access required");
+    }
+
+    return this.userService.createUser({ name, email, password, role });
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard)
+  async adminDeleteUser(
+    @CurrentUser() user: User,
+    @Args("userId", { type: () => Int }) userId: number,
+  ): Promise<boolean> {
+    if (user.role !== Role.ADMIN) {
+      throw new ForbiddenException("Admin access required");
+    }
+
+    if (user.userId === userId) {
+      throw new ForbiddenException("You cannot delete your own admin account");
+    }
+
+    return this.userService.deleteUserById(userId);
   }
 
   @Mutation(() => Boolean)

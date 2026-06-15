@@ -1,7 +1,10 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import * as bcrypt from "bcrypt";
 import { Cv } from "src/entities/cv.entity";
+import { Role } from "src/entities/role.enum";
 import { User } from "src/entities/user.entity";
+import { AdminUserSummary } from "./dto/admin-user-summary.output";
 import { UpdateUserProfileInput } from "./dto/profile.input";
 
 @Injectable()
@@ -14,6 +17,66 @@ export class UserService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.em.findOne(User, { email });
+  }
+
+  async findAdminUserSummaries(): Promise<AdminUserSummary[]> {
+    const rows = await this.em.getConnection().execute<
+      {
+        user_id: number;
+        name: string;
+        email: string;
+        role: Role;
+        avatar?: string | null;
+        current_role?: string | null;
+        location?: string | null;
+        created_at: Date | string;
+        updated_at?: Date | string | null;
+        cv_count: string | number;
+        scan_count: string | number;
+      }[]
+    >(
+      `
+        select
+          u.user_id,
+          u.name,
+          u.email,
+          u.role,
+          u.avatar,
+          u.current_role,
+          u.location,
+          u.created_at,
+          u.updated_at,
+          coalesce(cv_stats.cv_count, 0) as cv_count,
+          coalesce(scan_stats.scan_count, 0) as scan_count
+        from users u
+        left join (
+          select user_user_id, count(*)::int as cv_count
+          from cvs
+          group by user_user_id
+        ) cv_stats on cv_stats.user_user_id = u.user_id
+        left join (
+          select user_id, count(*)::int as scan_count
+          from cv_analysis_results
+          where user_id is not null
+          group by user_id
+        ) scan_stats on scan_stats.user_id = u.user_id
+        order by u.created_at desc, u.user_id desc
+      `,
+    );
+
+    return rows.map((row) => ({
+      userId: Number(row.user_id),
+      name: row.name,
+      email: row.email,
+      role: row.role,
+      avatar: row.avatar ?? null,
+      currentRole: row.current_role ?? null,
+      location: row.location ?? null,
+      createdAt: new Date(row.created_at),
+      updatedAt: row.updated_at ? new Date(row.updated_at) : null,
+      cvCount: Number(row.cv_count ?? 0),
+      scanCount: Number(row.scan_count ?? 0),
+    }));
   }
 
   async findOrCreateGoogleUser(params: {
@@ -122,6 +185,50 @@ export class UserService {
     user.baseCvId = cv.cvId;
     await this.em.persistAndFlush(user);
     return user;
+  }
+
+  async updateUserRole(userId: number, role: Role): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    user.role = role;
+    user.updatedAt = new Date();
+    await this.em.persistAndFlush(user);
+
+    return user;
+  }
+
+  async createUser(params: {
+    name: string;
+    email: string;
+    password: string;
+    role: Role;
+  }): Promise<User> {
+    const existing = await this.findByEmail(params.email);
+    if (existing) {
+      throw new BadRequestException("Email is already in use");
+    }
+
+    const user = new User();
+    user.name = params.name.trim();
+    user.email = params.email.trim().toLowerCase();
+    user.password = await bcrypt.hash(params.password, 10);
+    user.role = params.role;
+    user.createdAt = new Date();
+    user.updatedAt = new Date();
+
+    await this.em.persistAndFlush(user);
+    return user;
+  }
+
+  async deleteUserById(userId: number): Promise<boolean> {
+    const user = await this.findById(userId);
+    if (!user) return false;
+
+    await this.em.removeAndFlush(user);
+    return true;
   }
 
   async deleteUserAccount(userId: number): Promise<boolean> {
